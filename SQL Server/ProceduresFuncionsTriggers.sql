@@ -2,30 +2,103 @@
 GO
 
 -- Alterar o estoque de produtos conforme movimentações
-CREATE OR ALTER TRIGGER trg_AtualizaEstoque
+CREATE OR ALTER TRIGGER trg_AtualizaEstoqueVendaItens
 ON VendaItens
 AFTER INSERT, DELETE, UPDATE
 AS
 BEGIN
     SET NOCOUNT ON;
 
+    DECLARE
+        @VendaId        INT,
+        @QtdIns         INT,
+        @QtdDel         INT,
+        @Qtd            INT,
+        @ValorVendido   DECIMAL(10,2),
+        @CodigoProduto  NVARCHAR(5),
+        @NomeProduto    NVARCHAR(80),
+        @Preco          DECIMAL(10,2),
+        @Custo          DECIMAL(10,2);
+    
+    -- Atualiza estoque após alteração na venda
+    IF EXISTS (SELECT * FROM inserted UNION ALL SELECT * FROM deleted)
+    BEGIN
+        -- Atualiza o estoque dos PRODUTOS para alteração de quantidade
+        UPDATE P
+        SET P.Estoque = 
+            CASE
+                WHEN D.ProdutoId = I.ProdutoId THEN P.Estoque + (D.Quantidade - I.Quantidade)
+                WHEN D.ProdutoId IS NULL AND I.ProdutoId IS NOT NULL THEN P.Estoque - I.Quantidade
+                WHEN D.ProdutoId IS NOT NULL AND I.ProdutoId IS NULL THEN P.Estoque + D.Quantidade
+                ELSE P.Estoque
+            END
+        FROM Produtos P
+        FULL JOIN Inserted I ON P.Id = I.ProdutoId
+        FULL JOIN Deleted D  ON P.Id = D.ProdutoId;
+        
+        -- Inclui uma movimentação de estoque
+        INSERT INTO MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
+                                          Quantidade,Preco,ValorVendido,Custo,OV,Observacao)
+        SELECT 
+            CASE 
+                WHEN ISNULL(D.Quantidade,0) > ISNULL(I.Quantidade,0) THEN 'E'
+                WHEN ISNULL(D.Quantidade,0) < ISNULL(I.Quantidade,0) THEN 'S'
+            END AS TipoMovimentacao,
+            P.Codigo,
+            P.Nome,
+            ABS(D.Quantidade - I.Quantidade) AS Quantidade,
+            P.Preco,
+            I.PrecoUnitario,
+            P.Custo,
+            I.VendaId,
+            'Atualização do produto na venda nº ' + I.VendaId
+        FROM 
+            Deleted D
+            INNER JOIN Inserted I ON I.Id = D.Id
+            INNER JOIN PRODUTOS P ON D.ProdutoId = P.Id OR I.ProdutoId = P.Id
+        WHERE D.Quantidade <> I.Quantidade;
+
+        RETURN;
+    END;
+
     -- Reduz estoque ao inserir um item de venda
     IF EXISTS (SELECT * FROM inserted)
     BEGIN
+        -- Atribui a quantidade na variável
+        SELECT @Qtd = I.Quantidade FROM inserted I;
+
+        -- Atualiza a tabela PRODUTOS
         UPDATE P
         SET P.Estoque = P.Estoque - I.Quantidade
         FROM Produtos P
         INNER JOIN inserted I ON P.Id = I.ProdutoId;
 
-         -- Inclui uma movimentação de estoque
-        INSERT INTO MOVIMENTACOESESTOQUE ()
-               VALUES();
+        -- Inclui uma movimentação de estoque
+        INSERT INTO MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
+                                          Quantidade,Preco,ValorVendido,Custo,OV,Observacao)
+        SELECT 
+            'S',
+            P.Codigo,
+            P.Nome,
+            I.Quantidade,
+            P.Preco,
+            I.PrecoUnitario,
+            P.Custo,
+            I.VendaId,
+            'Inclusão do produto na venda nº ' + I.VendaId
+        FROM 
+            Inserted I
+            INNER JOIN PRODUTOS P ON I.ProdutoId = P.Id;
+
         RETURN;
     END
 
     -- Retorna estoque ao deletar um item de venda (ex: cancelamento)
     IF EXISTS (SELECT * FROM deleted)
     BEGIN
+        -- Atribui a quantidade na variável
+        SELECT @Qtd = D.Quantidade FROM deleted D;
+
         -- Atualiza a tabela PRODUTOS
         UPDATE P
         SET P.Estoque = P.Estoque + D.Quantidade
@@ -33,21 +106,29 @@ BEGIN
         INNER JOIN deleted D ON P.Id = D.ProdutoId;
 
         -- Inclui uma movimentação de estoque
-        INSERT INTO MOVIMENTACOESESTOQUE ()
-               VALUES();
+        INSERT INTO MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
+                                          Quantidade,Preco,ValorVendido,Custo,OV,Observacao)
+        SELECT 
+            'E',
+            P.Codigo,
+            P.Nome,
+            D.Quantidade,
+            P.Preco,
+            D.PrecoUnitario,
+            P.Custo,
+            D.VendaId,
+            'Exclusão do produto na venda nº ' + D.VendaId
+        FROM 
+            Deleted D
+            INNER JOIN PRODUTOS P ON D.ProdutoId = P.Id;
+
         RETURN;
-    END
-
-     -- Inclui uma movimentação de estoque
-    INSERT INTO MOVIMENTACOESESTOQUE ()
-           VALUES();
-
-
+    END;
 END;
 GO
 
--- Inclui movimentação de estoque para interações de venda, ajuste manual ou entreda de produto
-CREATE OR ALTER TRIGGER trg_MovimentacaoEstoque
+-- Inclui movimentação de estoque para interações de venda, ajuste manual ou entrada de produto
+CREATE OR ALTER TRIGGER trg_AtualizaEstoqueEntradaProduto
 ON PRODUTOS
 AFTER INSERT, DELETE, UPDATE
 AS
@@ -361,7 +442,7 @@ BEGIN
     -- Só cadastra se existe fornecedor para vincular
         IF NOT EXISTS (SELECT 1 FROM dbo.FORNECEDORES)
             PRINT('Tabela fornecedores vazia.');
-            BREAK;
+            RETURN;
 
     DECLARE
         @Produtos   NVARCHAR(30),
@@ -375,8 +456,8 @@ BEGIN
             Preco           DECIMAL(10,2),
             Estoque         INT,
             Unidade         CHAR(2), 
-            FornecedorId    INT
-        )
+            FornecedorId    INT);
+    INSERT INTO @ProdutosTemp VALUES
         ('P001', 'Caderno Espiral 100 Folhas', 'Caderno de espiral com capa dura, 100 folhas pautadas.', 12.50, 'UN'),
         ('P002', 'Caneta Esferográfica Azul', 'Caneta esferográfica azul com corpo de plástico.', 1.80, 'UN'),
         ('P003', 'Lápis Preto HB', 'Lápis preto HB com ponta de alta qualidade.', 0.50, 'UN'),
@@ -394,7 +475,7 @@ BEGIN
         
         DECLARE @Produtos
         
-        SET @NomeProduto = CONCAT('Produto ', @i, '-', @j);
+       -- SET @NomeProduto = CONCAT('Produto ', @i);
 
             INSERT INTO Produtos (Nome, Descricao, Preco, Estoque, Unidade, FornecedorId)
             VALUES (
@@ -406,6 +487,6 @@ BEGIN
                 @FornecedorId
             );
 
-            SET @j += 1;
+            --SET @j += 1;
             
     END;

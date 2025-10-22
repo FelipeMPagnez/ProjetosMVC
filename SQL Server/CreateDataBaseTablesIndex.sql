@@ -95,12 +95,16 @@ CREATE TABLE FORNECEDORES (
 );
 GO
 
+--DROP TABLE VendaItens;
+--DROP TABLE PRODUTOS;
 CREATE TABLE PRODUTOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
     Codigo          VARCHAR(5) UNIQUE NOT NULL,
     Nome            NVARCHAR(80) NOT NULL,
     Descricao       NVARCHAR(150),
     Preco           DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
+    PrecoCompra     DECIMAL(10,2) NOT NULL CHECK (PrecoCompra >= 0),
+    Custo           DECIMAL(10,2) NOT NULL CHECK (Custo >= 0),
     Estoque         INT NOT NULL DEFAULT 0 CHECK (Estoque >= 0),
     Unidade         CHAR(2) NOT NULL, 
     FornecedorId    INT NOT NULL FOREIGN KEY REFERENCES Fornecedores(Id),
@@ -109,19 +113,62 @@ CREATE TABLE PRODUTOS (
 );
 GO
 
-CREATE TABLE MOVIMENTACAOESTOQUE(
+-- DROP TABLE MOVIMENTACOESESTOQUE;
+CREATE TABLE MOVIMENTACOESESTOQUE(
     Id                  INT IDENTITY(1,1) PRIMARY KEY,
-    TipoMovimentacao    NVARCHAR(20) NOT NULL,
+    TipoMovimentacao    CHAR(1) NOT NULL,
     CodigoProduto       NVARCHAR(5) NOT NULL,
     NomeProduto         NVARCHAR(80) NOT NULL,
-    Quantidade,
-    Preco,
-    ValorVendido,
-    ValorCompra,
-    OV, 
-    DataMovimentacao,
+    Quantidade          INT NOT NULL,
+    Preco               DECIMAL(10,2) NOT NULL,
+    ValorVendido        DECIMAL(10,2) NOT NULL,
+    Custo               DECIMAL(10,2) NOT NULL,
+    OV                  INT,
+    Observacao          NVARCHAR(30),
+    DataMovimentacao    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 );
 GO
+
+CREATE TABLE Entradas (
+    Id                  INT IDENTITY(1,1) PRIMARY KEY,
+    NumeroNotaFiscal    NVARCHAR(20) NOT NULL,
+    Serie               NVARCHAR(10),
+    ChaveAcesso         CHAR(44) UNIQUE, -- formato padrão da NF-e
+    DataEmissao         DATETIME2 NOT NULL,
+    DataEntrada         DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+    FornecedorId        INT NOT NULL FOREIGN KEY REFERENCES Fornecedores(Id),
+    ValorTotal          DECIMAL(12,2) CHECK (ValorTotal >= 0),
+    ICMS_Total          DECIMAL(10,2) DEFAULT 0 CHECK (ICMS_Total >= 0),
+    IPI_Total           DECIMAL(10,2) DEFAULT 0 CHECK (IPI_Total >= 0),
+    PIS_Total           DECIMAL(10,2) DEFAULT 0 CHECK (PIS_Total >= 0),
+    COFINS_Total        DECIMAL(10,2) DEFAULT 0 CHECK (COFINS_Total >= 0),
+    Observacoes         NVARCHAR(500),
+    UsuarioCadastro     NVARCHAR(100),
+    Ativo               BIT NOT NULL DEFAULT 1
+);
+GO
+
+CREATE TABLE EntradaItens (
+    Id                  INT IDENTITY(1,1) PRIMARY KEY,
+    EntradaId           INT NOT NULL FOREIGN KEY REFERENCES Entradas(Id),
+    ProdutoId           INT NOT NULL FOREIGN KEY REFERENCES Produtos(Id),
+    Quantidade          INT NOT NULL CHECK (Quantidade > 0),
+    PrecoUnitario       DECIMAL(10,2) NOT NULL CHECK (PrecoUnitario >= 0),
+    ICMS_Aliquota       DECIMAL(5,2) DEFAULT 0 CHECK (ICMS_Aliquota >= 0),
+    ICMS_Valor          DECIMAL(10,2) DEFAULT 0 CHECK (ICMS_Valor >= 0),
+    IPI_Aliquota        DECIMAL(5,2) DEFAULT 0 CHECK (IPI_Aliquota >= 0),
+    IPI_Valor           DECIMAL(10,2) DEFAULT 0 CHECK (IPI_Valor >= 0),
+    PIS_Aliquota        DECIMAL(5,2) DEFAULT 0 CHECK (PIS_Aliquota >= 0),
+    PIS_Valor           DECIMAL(10,2) DEFAULT 0 CHECK (PIS_Valor >= 0),
+    COFINS_Aliquota     DECIMAL(5,2) DEFAULT 0 CHECK (COFINS_Aliquota >= 0),
+    COFINS_Valor        DECIMAL(10,2) DEFAULT 0 CHECK (COFINS_Valor >= 0),
+    ValorTotal          AS ((Quantidade * PrecoUnitario) + ICMS_Valor + IPI_Valor + PIS_Valor + COFINS_Valor) PERSISTED,    
+    CustoUnitario       DECIMAL(10,2) NULL,
+    Lote                NVARCHAR(50) NULL,
+    Validade            DATE NULL
+);
+GO
+
 
 CREATE TABLE SERVICOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
@@ -137,7 +184,7 @@ CREATE TABLE VENDAS (
     Id          INT IDENTITY(1,1) PRIMARY KEY,
     ClienteId   INT NULL,
     DataVenda   DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-    Total       DECIMAL(12,2) NOT NULL CHECK (Total >= 0),
+    Total       DECIMAL(10,2) NOT NULL CHECK (Total >= 0),
     Estatus     NVARCHAR(50) NOT NULL DEFAULT 'Aberta'
 );
 GO
@@ -147,8 +194,8 @@ CREATE TABLE VendaItens (
     VendaId         INT NOT NULL,
     ProdutoId       INT NULL,
     ServicoId       INT NULL,
-    Quantidade      DECIMAL(10,2) DEFAULT 1 CHECK (Quantidade > 0),
-    PrecoUnitario   DECIMAL(12,2) NOT NULL CHECK (PrecoUnitario >= 0),
+    Quantidade      INT DEFAULT 1 CHECK (Quantidade > 0),
+    PrecoUnitario   DECIMAL(10,2) NOT NULL CHECK (PrecoUnitario >= 0),
     Total           AS (PrecoUnitario * Quantidade) PERSISTED,
     CONSTRAINT FK_VendaItens_Vendas   FOREIGN KEY (VendaId)   REFERENCES Vendas(Id),
     CONSTRAINT FK_VendaItens_Produtos FOREIGN KEY (ProdutoId) REFERENCES Produtos(Id),
@@ -168,7 +215,7 @@ CREATE TABLE MOVIMENTACOESFINANCEIRAS (
     Id                  INT IDENTITY(1,1) PRIMARY KEY,
     VendaId             INT NULL FOREIGN KEY REFERENCES Vendas(Id),
     TipoMovimentacacao  NVARCHAR(10) NOT NULL CHECK (TipoMovimentacacao IN ('Entrada', 'Saida')),
-    Valor               DECIMAL(12,2) NOT NULL CHECK (Valor >= 0),
+    Valor               DECIMAL(10,2) NOT NULL CHECK (Valor >= 0),
     FormaPagamentoId    INT NULL FOREIGN KEY REFERENCES FormasPagamento(Id),
     DataMovimento       DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     Observacao          NVARCHAR(500)
