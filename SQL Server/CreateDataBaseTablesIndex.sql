@@ -123,13 +123,13 @@ CREATE TABLE MOVIMENTACOESESTOQUE(
     Preco               DECIMAL(10,2) NOT NULL,
     ValorVendido        DECIMAL(10,2) NOT NULL,
     Custo               DECIMAL(10,2) NOT NULL,
-    OV                  INT,
+    DocumentoId         INT,
     Observacao          NVARCHAR(30),
     DataMovimentacao    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 );
 GO
 
-CREATE TABLE Entradas (
+CREATE TABLE ENTRADAS (
     Id                  INT IDENTITY(1,1) PRIMARY KEY,
     NumeroNotaFiscal    NVARCHAR(20) NOT NULL,
     Serie               NVARCHAR(10),
