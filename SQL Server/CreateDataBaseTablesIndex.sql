@@ -1,3 +1,4 @@
+USE master
 DROP DATABASE Treinamento;
 GO
 
@@ -102,7 +103,7 @@ CREATE TABLE PRODUTOS (
     Codigo          VARCHAR(5) UNIQUE NOT NULL,
     Nome            NVARCHAR(80) NOT NULL,
     Descricao       NVARCHAR(150),
-    PrecoVenda      DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
+    PrecoVenda      DECIMAL(10,2) NOT NULL CHECK (PrecoVenda >= 0),
     PrecoCompra     DECIMAL(10,2) NOT NULL CHECK (PrecoCompra >= 0),
     Custo           DECIMAL(10,2) NOT NULL CHECK (Custo >= 0),
     Estoque         INT NOT NULL DEFAULT 0 CHECK (Estoque >= 0),
@@ -124,16 +125,19 @@ CREATE TABLE MOVIMENTACOESESTOQUE(
     ValorVendido        DECIMAL(10,2) NOT NULL,
     Custo               DECIMAL(10,2) NOT NULL,
     DocumentoId         INT,
-    Observacao          NVARCHAR(30),
+    Observacao          NVARCHAR(80),
     DataMovimentacao    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 );
 GO
 
+-- DROP TABLE ENTRADAITENS
+-- DROP TABLE ENTRADAS
 CREATE TABLE ENTRADAS (
     Id                  INT IDENTITY(1,1) PRIMARY KEY,
-    NumeroNotaFiscal    NVARCHAR(20) NOT NULL,
-    Serie               NVARCHAR(10),
-    ChaveAcesso         CHAR(44) UNIQUE, -- formato padrão da NF-e
+    NumeroNotaFiscal    NVARCHAR(9) NOT NULL,
+    Serie               NVARCHAR(3) NOT NULL,
+    Modelo              NVARCHAR(2) NOT NULL,
+    ChaveAcesso         CHAR(44) UNIQUE,
     DataEmissao         DATETIME2 NOT NULL,
     DataEntrada         DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     FornecedorId        INT NOT NULL FOREIGN KEY REFERENCES Fornecedores(Id),
@@ -233,4 +237,8 @@ GO
 CREATE INDEX IX_VendaItens_VendaId ON VendaItens(VendaId);
 CREATE INDEX IX_VendaItens_ProdutoId ON VendaItens(ProdutoId);
 CREATE INDEX IX_VendaItens_ServicoId ON VendaItens(ServicoId);
+GO
+
+CREATE INDEX IX_MovEstoque_Codigo ON MovimentacoesEstoque(CodigoProduto);
+CREATE INDEX IX_MovEstoque_Nome ON MovimentacoesEstoque(NomeProduto);
 GO

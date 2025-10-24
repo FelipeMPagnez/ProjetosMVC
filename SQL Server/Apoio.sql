@@ -104,10 +104,53 @@ BEGIN
             BREAK; -- CNPJ é único → sai do loop
                     
         IF @tentativas > 20
-            RETURN
+            RETURN;
     END;
 
 END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_GerarChavenF   
+    @NumeroNF       CHAR(9),
+    @Serie          CHAR(3),
+    @Modelo         CHAR(2),
+    @CNPJ           CHAR(14),
+    @cUF            CHAR(2)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    
+    DECLARE 
+        @AnoMes         CHAR(4) = FORMAT(GETDATE(), 'yyMM'),
+        @TipoEmissao    CHAR(1) = '1',
+        @CodigoNumerico CHAR(8) = RIGHT('00000000' + CAST(ABS(CHECKSUM(NEWID())) % 99999999 AS VARCHAR(8)), 8),        
+        @ChaveSemDV     CHAR(43),
+        @DV             INT,
+        @Resto          INT,
+        @Soma           INT = 0,
+        @Peso           INT = 2,
+        @Digito         CHAR(1);
+
+    -- Monta a chave sem o dígito verificador
+    SET @ChaveSemDV = @cUF + @AnoMes + @CNPJ + @Modelo + @Serie + @NumeroNF + @TipoEmissao + @CodigoNumerico;
+
+    -- Calcula o DV (dígito verificador) com base no módulo 11
+    DECLARE @i INT = LEN(@ChaveSemDV);
+    WHILE @i > 0
+    BEGIN
+        SET @Soma += (SUBSTRING(@ChaveSemDV, @i, 1) * @Peso);
+        SET @Peso = CASE WHEN @Peso = 9 THEN 2 ELSE @Peso + 1 END;
+        SET @i -= 1;
+    END
+
+    SET @Resto = @Soma % 11;
+    SET @DV = CASE WHEN @Resto = 0 OR @Resto = 1 THEN 0 ELSE 11 - @Resto END;
+
+    DECLARE @ChaveFinal CHAR(44) = @ChaveSemDV + CAST(@DV AS CHAR(1));
+
+    -- Retrona o resultado
+    RETURN @ChaveFinal;
+END
 GO
 
 -- Gera clientes aleatórios para popular a tabela CLIENTES
@@ -249,7 +292,10 @@ BEGIN
             ('@gmail.com'),('@outlook.com'),('@yahoo.com'),('@icloud.com');
         
         -- atribui valores as variáveis 
-        SELECT TOP 1 @Cidade = Cidade, @UF = UF, @DDD = DDD FROM @Cidades ORDER BY NEWID();
+        IF @Cidade IS NULL AND @UF IS NULL
+            SELECT TOP 1 @Cidade = Cidade, @UF = UF, @DDD = DDD FROM @Cidades ORDER BY NEWID();
+        ELSE
+            SELECT TOP 1 @DDD = DDD FROM @Cidades WHERE Cidade = @Cidade;
 
         -- Insere fornecedor
         INSERT INTO dbo.FORNECEDORES (NomeFantasia, RazaoSocial, CNPJ, Email, Telefone, Cidade, UF)
@@ -284,8 +330,6 @@ BEGIN
 
     DECLARE
         @FornecedorId   INT,
-        @Produtos       NVARCHAR(30),
-        @Estoque        INT,
         @i              INT = 1;
 
     -- Atribui um valor aleatorio para Fornecedor
@@ -337,8 +381,9 @@ END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.usp_PopulaEntradaItens
-    @NumeroNotaFiscal    NVARCHAR(20),
-    @Serie               NVARCHAR(10),
+    @NumeroNotaFiscal    NVARCHAR(9),
+    @Serie               NVARCHAR(3),
+    @Modelo              NVARCHAR(2),
     @ChaveAcesso         CHAR(44),
     @DataEmissao         DATETIME2,
     @FornecedorCNPJ      CHAR(14),
@@ -374,11 +419,11 @@ BEGIN
     END
 
     -- Insere a cabeçalho da nota
-    INSERT INTO dbo.ENTRADAS (NumeroNotaFiscal, Serie, ChaveAcesso, DataEmissao, FornecedorId,
+    INSERT INTO dbo.ENTRADAS (NumeroNotaFiscal, Serie, Modelo, ChaveAcesso, DataEmissao, FornecedorId,
                               ValorTotal, ICMS_Total, IPI_Total, PIS_Total, COFINS_Total,
                               Observacoes, UsuarioCadastro)
     SELECT 
-        @NumeroNotaFiscal, @Serie, @ChaveAcesso, @DataEmissao, @FornecedorId,
+        @NumeroNotaFiscal, @Serie, @Modelo, @ChaveAcesso, @DataEmissao, @FornecedorId,
         SUM((I.Quantidade * I.PrecoUnitario) + ((I.Quantidade * I.PrecoUnitario) * 
             (I.ICMS_Aliquota + I.IPI_Aliquota + I.PIS_Aliquota + I.COFINS_Aliquota) / 100)),
         SUM((I.Quantidade * I.PrecoUnitario) * (I.ICMS_Aliquota / 100)),
@@ -439,3 +484,46 @@ BEGIN
     PRINT 'Entrada de nota fiscal registrada com sucesso!';
 END;
 GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_GeraDadosEntradaItens
+    @QtdNotas   INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE
+        @NumeroNotaFiscal    NVARCHAR(9),
+        @Serie               NVARCHAR(3),
+        @Modelo              NVARCHAR(2),
+        @ChaveAcesso         CHAR(44),
+        @DataEmissao         DATETIME2,
+        @FornecedorCNPJ      CHAR(14),
+        @FornecedorNome      NVARCHAR(150),
+        @FornecedorCidade    NVARCHAR(100),
+        @FornecedorUF        CHAR(2),
+        @UsuarioCadastro     NVARCHAR(100),
+        @Itens TABLE
+        (
+            CodigoProduto     NVARCHAR(5),
+            Quantidade        INT,
+            PrecoUnitario     DECIMAL(10,2),
+            ICMS_Aliquota     DECIMAL(5,2),
+            IPI_Aliquota      DECIMAL(5,2),
+            PIS_Aliquota      DECIMAL(5,2),
+            COFINS_Aliquota   DECIMAL(5,2)
+        )
+
+    -- GERAR O CABEÇALHO DA NOTA       
+        @FornecedorCNPJ CHAR(14) = dbo.usp_GerarCNPJ,
+        @Modelo CHAR(2) = '55',
+        @Serie CHAR(3) = RIGHT('000' + CAST(ABS(CHECKSUM(NEWID())) % 999 + 1 AS VARCHAR(3)), 3),
+        @NumeroNotaFiscal CHAR(9) = RIGHT('000000000' + CAST(ABS(CHECKSUM(NEWID())) % 999999999 AS VARCHAR(9)), 9),
+
+
+    -- GERAR O FORNCEDOR
+
+    -- GERAR OS IMPOSTOS
+
+    -- GERAR OS ITENS DA NOTAS COM IMPOSTOS
+
+END

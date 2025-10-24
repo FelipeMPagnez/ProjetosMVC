@@ -9,16 +9,16 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    -- Atualiza estoque após alteração na venda
-    IF EXISTS (SELECT 1 FROM Inserted I INNER JOIN Deleted D ON I.Id = D.Id)
+    -- Atualiza estoque após alteração na venda(UPFATE)
+    IF EXISTS (SELECT 1 FROM Inserted) AND EXISTS (SELECT 1 FROM Deleted)
     BEGIN
         -- Atualiza o estoque dos PRODUTOS para alteração de quantidade ou exclusão
         UPDATE P
         SET P.Estoque = 
             CASE
-                WHEN D.ProdutoId = I.ProdutoId THEN P.Estoque + (D.Quantidade - I.Quantidade)
-                WHEN D.ProdutoId IS NULL AND I.ProdutoId IS NOT NULL THEN P.Estoque - I.Quantidade
-                WHEN D.ProdutoId IS NOT NULL AND I.ProdutoId IS NULL THEN P.Estoque + D.Quantidade
+                WHEN D.ProdutoId = I.ProdutoId THEN P.Estoque + (ISNULL(D.Quantidade,0) - ISNULL(I.Quantidade,0))
+                WHEN D.ProdutoId IS NULL AND I.ProdutoId IS NOT NULL THEN P.Estoque - ISNULL(I.Quantidade,0)
+                WHEN D.ProdutoId IS NOT NULL AND I.ProdutoId IS NULL THEN P.Estoque + ISNULL(D.Quantidade,0)
                 ELSE P.Estoque
             END
         FROM Produtos P
@@ -35,17 +35,17 @@ BEGIN
             END AS TipoMovimentacao,
             P.Codigo,
             P.Nome,
-            ABS(D.Quantidade - I.Quantidade) AS Quantidade,
-            P.Preco,
+            ABS(ISNULL(D.Quantidade,0) - ISNULL(I.Quantidade,0)) AS Quantidade,
+            P.PrecoVenda,
             I.PrecoUnitario,
             P.Custo,
             I.VendaId,
             'Atualização do produto na venda nº ' + I.VendaId
         FROM 
             Deleted D
-            INNER JOIN Inserted I ON I.Id = D.Id
-            INNER JOIN PRODUTOS P ON D.ProdutoId = P.Id OR I.ProdutoId = P.Id
-        WHERE D.Quantidade <> I.Quantidade;
+            FULL JOIN Inserted I ON I.Id = D.Id
+            FULL JOIN PRODUTOS P ON D.ProdutoId = P.Id OR I.ProdutoId = P.Id
+        WHERE D.Quantidade <> I.Quantidade OR D.PrecoUnitario <> I.PrecoUnitario;
 
         RETURN;
     END;
@@ -67,7 +67,7 @@ BEGIN
             P.Codigo,
             P.Nome,
             I.Quantidade,
-            P.Preco,
+            P.PrecoVenda,
             I.PrecoUnitario,
             P.Custo,
             I.VendaId,
@@ -96,7 +96,7 @@ BEGIN
             P.Codigo,
             P.Nome,
             D.Quantidade,
-            P.Preco,
+            P.PrecoVenda,
             D.PrecoUnitario,
             P.Custo,
             D.VendaId,
@@ -110,39 +110,72 @@ BEGIN
 END;
 GO
 
----- Inclui movimentação de estoque para interações de venda, ajuste manual ou entrada de produto
---CREATE OR ALTER TRIGGER trg_AtualizaEstoqueEntradaProduto
---ON PRODUTOS
---AFTER INSERT, DELETE, UPDATE
---AS
---BEGIN
---    SET NOCOUNT ON;
-    
---    IF EXISTS (SELECT * FROM inserted)
---    BEGIN
---        UPDATE P
---        SET P.Estoque = P.Estoque - I.Quantidade
---        FROM Produtos P
---        INNER JOIN inserted I ON P.Id = I.ProdutoId;
---        RETURN;
---    END
+-- Inclui movimentação de estoque para interações de venda, ajuste manual ou entrada de produto
+CREATE OR ALTER TRIGGER trg_AtualizaMovimentacoesEstoqueEntradaManual
+ON PRODUTOS
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
 
---    -- Retorna estoque ao deletar um item de venda (ex: cancelamento)
---    IF EXISTS (SELECT * FROM deleted)
---    BEGIN
---        UPDATE P
---        SET P.Estoque = P.Estoque + D.Quantidade
---        FROM Produtos P
---        INNER JOIN deleted D ON P.Id = D.ProdutoId;
---        RETURN;
---    END
+    -- Alteração manual de um produto(UPDATE)
+    IF EXISTS (SELECT 1 FROM Inserted) AND EXISTS (SELECT 1 FROM Deleted)
+    BEGIN        
+        -- Inclui uma movimentação de estoque
+        INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
+                                              Quantidade,Preco,ValorVendido,Custo,DocumentoId,Observacao)
+        SELECT 
+            CASE 
+                WHEN ISNULL(I.Estoque,0) > ISNULL(D.Estoque,0) THEN 'E'
+                WHEN ISNULL(I.Estoque,0) < ISNULL(D.Estoque,0) THEN 'S'
+                ELSE 'A'
+            END AS TipoMovimentacao,
+            I.Codigo,
+            I.Nome,
+            ABS(ISNULL(I.Estoque,0) - ISNULL(D.Estoque,0)) AS Quantidade,
+            I.PrecoVenda,
+            '',
+            I.Custo,
+            '',
+            CASE
+                WHEN I.Ativo = 0 THEN 'Atualização manual do produto, produto inativado'
+                WHEN I.Ativo = 1 AND ISNULL(I.Estoque,0) <> ISNULL(D.Estoque,0) THEN 'Atualização manual do produto, ajuste de estoque'
+                WHEN I.Ativo = 1 AND ISNULL(I.PrecoVenda,0) <> ISNULL(D.PrecoVenda,0) THEN 'Atualização manual do produto, correção preço venda'
+                WHEN I.Ativo = 1 AND ISNULL(I.PrecoCompra,0) <> ISNULL(D.PrecoCompra,0) THEN 'Atualização manual do produto, correção preço compra'
+                WHEN I.Ativo = 1 AND ISNULL(I.Custo,0) <> ISNULL(D.Custo,0) THEN 'Atualização manual do produto, correção custo'
+            END AS Observacao
+        FROM Deleted D
+        FULL JOIN Inserted I ON I.Id = D.Id
+        WHERE 
+        D.Estoque <> I.Estoque OR D.PrecoVenda <> I.PrecoVenda OR D.PrecoCompra <> I.PrecoCompra OR D.Custo <> I.Custo;
+        RETURN;
+    END
 
+    -- Inclusão manual de novo produto(INSERT)
+    IF EXISTS (SELECT * FROM inserted)
+    BEGIN
+        -- Inclui uma movimentação de estoque
+        INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
+                                              Quantidade,Preco,ValorVendido,Custo,DocumentoId,Observacao)
+        SELECT 
+            'E',
+            I.Codigo,
+            I.Nome,
+            I.Estoque,
+            I.PrecoVenda,
+            '',
+            I.Custo,
+            '',
+            'Inclusão manual do produto'
+        FROM Inserted I
 
+        RETURN;
+    END
 
---END;
---GO
+END;
+GO
 
-CREATE OR ALTER TRIGGER trg_AtualizaEstoqueEntrada
+CREATE OR ALTER TRIGGER trg_AtualizaEstoqueEntradaNF
 ON EntradaItens
 AFTER INSERT, DELETE, UPDATE
 AS
@@ -153,18 +186,21 @@ BEGIN
         BEGIN TRAN;
 
         DECLARE 
-            @ProdutoId      INT,
-            @CodigoProduto  NVARCHAR(5),
-            @Quantidade     INT,
-            @PrecoUnitario  DECIMAL(10,2),
-            @CustoUnitario  DECIMAL(10,2),
-            @FornecedorId   INT;
+            @ProdutoId          INT,
+            @CodigoProduto      NVARCHAR(5),
+            @Quantidade         INT,
+            @PrecoUnitario      DECIMAL(10,2),
+            @CustoUnitario      DECIMAL(10,2),
+            @EntradaID          INT,
+            @NumeroNotaFiscal   INT,
+            @FornecedorId       INT;
 
-        DECLARE @NovosProdutos TABLE(Id INT, Codigo VARCHAR(5));
+        DECLARE @NovosProdutos TABLE(Id INT);
 
         -- Inclui produtos novos na tabela PRODUTOS
         DECLARE cur_ItensInseridos CURSOR FOR
-            SELECT I.CodigoProduto, I.Quantidade, I.PrecoUnitario, I.CustoUnitario, E.FornecedorId
+            SELECT 
+            I.CodigoProduto, I.Quantidade, I.PrecoUnitario, I.CustoUnitario, E.FornecedorId, I.EntradaId, E.NumeroNotaFiscal
             FROM Inserted I
             INNER JOIN dbo.ENTRADAS E ON I.EntradaId = E.Id
             WHERE
@@ -172,7 +208,7 @@ BEGIN
 
         OPEN cur_ItensInseridos;
         FETCH NEXT cur_ItensInseridos INTO 
-            @CodigoProduto,@Quantidade,@PrecoUnitario,@CustoUnitario,@FornecedorId;
+            @CodigoProduto,@Quantidade,@PrecoUnitario,@CustoUnitario,@EntradaID,@NumeroNotaFiscal,@FornecedorId;
 
         WHILE @@FETCH_STATUS = 0
         BEGIN
@@ -189,30 +225,52 @@ BEGIN
                 @FornecedorId
             );
 
-            SET @ProdutoId = SCOPE_IDENTITY();
+            INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao, CodigoProduto, NomeProduto, 
+                                                  Quantidade,PrecoVenda, ValorVendido, Custo, DocumentoId, Observacao)
+            VALUES (
+                'E',
+                @CodigoProduto,
+                CONCAT('Produto',@CodigoProduto),
+                @Quantidade,
+                @CustoUnitario*1.75,
+                '',
+                @CustoUnitario,
+                @EntradaID,
+                CONCAT('Entrada NF: ', @NumeroNotaFiscal));
 
-            INSERT INTO @NovosProdutos 
-            VALUES (@ProdutoId,@CodigoProduto);
+            SET @ProdutoId = SCOPE_IDENTITY();
+            INSERT INTO @NovosProdutos VALUES (@ProdutoId);
+
+            FETCH NEXT cur_ItensInseridos INTO 
+            @CodigoProduto,@Quantidade,@PrecoUnitario,@CustoUnitario,@EntradaID,@NumeroNotaFiscal,@FornecedorId;
 
         END;
 
-        -- Atualiza itens existentes
-        IF EXISTS (SELECT 1 FROM Inserted I INNER JOIN Deleted D ON I.Id = D.Id)
+        CLOSE cur_ItensInseridos;
+        DEALLOCATE cur_ItensInseridos;
+
+        -- Atualiza itens existentes(UPDATE)
+        IF EXISTS (SELECT 1 FROM Inserted) AND EXISTS (SELECT 1 FROM Deleted)
         BEGIN
             PRINT '→ Atualizando estoque e custo dos produtos já existentes.';            
 
             UPDATE P
             SET 
-            P.Estoque = P.Estoque + (I.Quantidade - D.Quantidade),
-            P.Preco = I.CustoUnitario*1.75,
+            P.Estoque += (ISNULL(I.Quantidade,0) - ISNULL(D.Quantidade,0)),
+            P.PrecoVenda = I.CustoUnitario * 1.75,
             P.Custo = I.CustoUnitario,
             P.PrecoCompra = I.PrecoUnitario
-            FROM Produtos P
-            INNER JOIN inserted I ON P.Id = I.ProdutoId
-            INNER JOIN deleted D  ON I.Id = D.Id;
+            FROM dbo.PRODUTOS P
+            FULL JOIN Inserted I ON P.Nome = I.NomeProduto
+            FULL JOIN Deleted D  ON P.Nome = D.NomeProduto
+            WHERE  
+            (ISNULL(I.Quantidade,0) <> ISNULL(D.Quantidade,0) OR 
+             ISNULL(I.PrecoUnitario,0) <> ISNULL(D.PrecoUnitario,0) OR 
+             ISNULL(I.CustoUnitario,0) <> ISNULL(D.CustoUnitario,0))
+            AND P.Id NOT IN(SELECT Id FROM @NovosProdutos);
 
             INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao,CodigoProduto,NomeProduto,
-                                                  Quantidade,Preco,ValorVendido,Custo,DocumentoId,Observacao)
+                                                  Quantidade,PrecoVenda,ValorVendido,Custo,DocumentoId,Observacao)
             SELECT
                 CASE 
                     WHEN ISNULL(I.Quantidade,0) > ISNULL(D.Quantidade,0) THEN 'E'
@@ -220,81 +278,88 @@ BEGIN
                 END,
                 P.Codigo,
                 P.Nome,
-                ABS(I.Quantidade - D.Quantidade) AS Quantidade,
-                ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2)*1.75,
+                ABS(ISNULL(I.Quantidade,0) - ISNULL(D.Quantidade,0)) AS Quantidade,
+                I.CustoUnitario * 1.75,
                 '',
-                ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2),
+                I.CustoUnitario,
                 I.EntradaId,
                 CONCAT('Ajuste NF: ', E.NumeroNotaFiscal)
-            FROM Inserted I
-            INNER JOIN Deleted D  ON I.Id = D.Id
-            INNER JOIN Produtos P ON P.Id = I.ProdutoId
-            INNER JOIN Entradas E ON E.Id = I.EntradaId
-            WHERE I.Quantidade <> D.Quantidade OR 
-                  I.PrecoUnitario <> D.PrecoUnitario OR 
-                  I.CustoUnitario <> D.CustoUnitario;
+            FROM dbo.PRODUTOS P
+            FULL JOIN Inserted I ON P.Nome = I.NomeProduto
+            FULL JOIN Deleted D  ON P.Nome = D.NomeProduto
+            INNER JOIN dbo.ENTRADAS E ON I.EntradaId = E.Id
+            WHERE 
+            (ISNULL(I.Quantidade,0) <> ISNULL(D.Quantidade,0) OR 
+             ISNULL(I.PrecoUnitario,0) <> ISNULL(D.PrecoUnitario,0) OR 
+             ISNULL(I.CustoUnitario,0) <> ISNULL(D.CustoUnitario,0))
+            AND P.Id NOT IN(SELECT Id FROM @NovosProdutos);
 
             PRINT '✓ Atualização de estoque e custo concluída.';
         END
 
-        -- Entrada de novos itens via nota de entrada
-        IF EXISTS (SELECT 1 FROM Inserted WHERE Id NOT IN (SELECT Id FROM Deleted))
+        -- Entrada de novos itens via nota de entrada(INSERT)
+        IF EXISTS (SELECT 1 FROM Inserted) AND NOT EXISTS (SELECT 1 FROM Deleted)
         BEGIN
             PRINT '→ Inserindo novos itens de entrada na movimentação e atualizando estoque.';
 
             INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao, CodigoProduto, NomeProduto, 
-                                                  Quantidade,Preco, ValorVendido, Custo, DocumentoId, Observacao)
+                                                  Quantidade,PrecoVenda, ValorVendido, Custo, DocumentoId, Observacao)
             SELECT
                 'E',
                 P.Codigo,
                 P.Nome,
                 I.Quantidade,
-                ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2)*1.75,
+                I.CustoUnitario*1.75,
                 '',
-                ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2),
+                I.CustoUnitario,
                 I.EntradaId,
                 CONCAT('Entrada NF: ', E.NumeroNotaFiscal)
-            FROM inserted I
-            INNER JOIN Produtos P ON P.Id = I.ProdutoId
-            INNER JOIN Entradas E ON E.Id = I.EntradaId;
+            FROM Inserted I
+            INNER JOIN dbo.PRODUTOS P ON P.Nome = I.NomeProduto
+            INNER JOIN dbo.ENTRADAS E ON E.Id   = I.EntradaId
+            WHERE
+            P.Id NOT IN(SELECT Id FROM @NovosProdutos);
 
             UPDATE P
             SET 
-            P.Estoque = P.Estoque + I.Quantidade, 
-            P.Preco = ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2)*1.75,
-            P.Custo = ROUND(I.PrecoUnitario + ((I.ICMS_Valor + I.IPI_Valor + I.PIS_Valor + I.COFINS_Valor) / NULLIF(I.Quantidade,0)),2),
+            P.Estoque += I.Quantidade,
+            P.PrecoVenda = I.CustoUnitario*1.75,
+            P.Custo = I.CustoUnitario,
             P.PrecoCompra = I.PrecoUnitario
-            FROM Produtos P
-            INNER JOIN inserted I ON P.Id = I.ProdutoId;
+            FROM dbo.PRODUTOS P
+            INNER JOIN inserted I ON P.Nome = I.NomeProduto
+            WHERE
+            (P.Custo <> I.CustoUnitario OR P.Estoque <> I.Quantidade OR P.PrecoCompra <> I.PrecoUnitario)
+            AND P.Id NOT IN (SELECT Id FROM @NovosProdutos);
 
             PRINT '✓ Estoque atualizado com sucesso para novos produtos.';
         END
                 
-        -- Exclusão de itens via entrada de nota
-        IF EXISTS (SELECT 1 FROM Deleted WHERE Id NOT IN (SELECT Id FROM Inserted))
+        -- Exclusão de itens via entrada de nota(DELETE)
+        IF EXISTS (SELECT 1 FROM Deleted) AND NOT EXISTS (SELECT 1 FROM Inserted)
         BEGIN
             PRINT '→ Excluindo itens de entrada e revertendo estoque.';
 
             INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao, CodigoProduto, NomeProduto, 
-                                                  Quantidade,Preco, ValorVendido, Custo, DocumentoId, Observacao)
+                                                  Quantidade,PrecoVenda, ValorVendido, Custo, DocumentoId, Observacao)
             SELECT
                 'S',
                 P.Codigo,
                 P.Nome,
                 D.Quantidade,
-                ROUND(D.PrecoUnitario + ((D.ICMS_Valor + D.IPI_Valor + D.PIS_Valor + D.COFINS_Valor) / NULLIF(D.Quantidade,0)),2)*1.75,
+                D.CustoUnitario*1.75,
                 '',
-                ROUND(D.PrecoUnitario + ((D.ICMS_Valor + D.IPI_Valor + D.PIS_Valor + D.COFINS_Valor) / NULLIF(D.Quantidade,0)),2),
+                D.CustoUnitario,
                 D.EntradaId,
                 CONCAT('Cancelamento NF: ', E.NumeroNotaFiscal)
             FROM Deleted D
-            INNER JOIN Produtos P ON P.Id = D.ProdutoId
-            INNER JOIN Entradas E ON E.Id = D.EntradaId;
+            INNER JOIN dbo.PRODUTOS P ON P.Nome = D.NomeProduto
+            INNER JOIN dbo.ENTRADAS E ON E.Id = D.EntradaId;
 
             UPDATE P
             SET P.Estoque = P.Estoque - D.Quantidade
-            FROM Produtos P
-            INNER JOIN Deleted D ON P.Id = D.ProdutoId;
+            FROM dbo.PRODUTOS P
+            INNER JOIN Deleted D ON P.Nome = D.NomeProduto;
 
             PRINT '✓ Estoque revertido com sucesso após exclusão de nota.';
         END
