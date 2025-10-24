@@ -102,7 +102,7 @@ CREATE TABLE PRODUTOS (
     Codigo          VARCHAR(5) UNIQUE NOT NULL,
     Nome            NVARCHAR(80) NOT NULL,
     Descricao       NVARCHAR(150),
-    Preco           DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
+    PrecoVenda      DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
     PrecoCompra     DECIMAL(10,2) NOT NULL CHECK (PrecoCompra >= 0),
     Custo           DECIMAL(10,2) NOT NULL CHECK (Custo >= 0),
     Estoque         INT NOT NULL DEFAULT 0 CHECK (Estoque >= 0),
@@ -143,15 +143,14 @@ CREATE TABLE ENTRADAS (
     PIS_Total           DECIMAL(10,2) DEFAULT 0 CHECK (PIS_Total >= 0),
     COFINS_Total        DECIMAL(10,2) DEFAULT 0 CHECK (COFINS_Total >= 0),
     Observacoes         NVARCHAR(500),
-    UsuarioCadastro     NVARCHAR(100),
-    Ativo               BIT NOT NULL DEFAULT 1
+    UsuarioCadastro     NVARCHAR(100)
 );
 GO
 
 CREATE TABLE EntradaItens (
     Id                  INT IDENTITY(1,1) PRIMARY KEY,
     EntradaId           INT NOT NULL FOREIGN KEY REFERENCES Entradas(Id),
-    ProdutoId           INT NOT NULL FOREIGN KEY REFERENCES Produtos(Id),
+    CodigoProduto       NVARCHAR(5) NOT NULL,
     Quantidade          INT NOT NULL CHECK (Quantidade > 0),
     PrecoUnitario       DECIMAL(10,2) NOT NULL CHECK (PrecoUnitario >= 0),
     ICMS_Aliquota       DECIMAL(5,2) DEFAULT 0 CHECK (ICMS_Aliquota >= 0),
@@ -163,9 +162,7 @@ CREATE TABLE EntradaItens (
     COFINS_Aliquota     DECIMAL(5,2) DEFAULT 0 CHECK (COFINS_Aliquota >= 0),
     COFINS_Valor        DECIMAL(10,2) DEFAULT 0 CHECK (COFINS_Valor >= 0),
     ValorTotal          AS ((Quantidade * PrecoUnitario) + ICMS_Valor + IPI_Valor + PIS_Valor + COFINS_Valor) PERSISTED,    
-    CustoUnitario       DECIMAL(10,2) NULL,
-    Lote                NVARCHAR(50) NULL,
-    Validade            DATE NULL
+    CustoUnitario       DECIMAL(10,2) NULL
 );
 GO
 

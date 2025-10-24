@@ -278,61 +278,65 @@ BEGIN
     SET NOCOUNT ON;
 
     -- Só cadastra se existe fornecedor para vincular
-        IF NOT EXISTS (SELECT 1 FROM dbo.FORNECEDORES)
-            PRINT('Tabela fornecedores vazia.');
+        IF NOT EXISTS (SELECT TOP 1 FROM dbo.FORNECEDORES)
+            PRINT 'Tabela fornecedores vazia.';
             RETURN;
 
     DECLARE
-        @Produtos   NVARCHAR(30),
-        @Estoque    INT,
-        @i          INT = 1;
+        @FornecedorId   INT,
+        @Produtos       NVARCHAR(30),
+        @Estoque        INT,
+        @i              INT = 1;
 
-    DECLARE @ProdutosTemp TABLE (
-            Codigo          VARCHAR(5),
-            Nome            NVARCHAR(80),
-            Descricao       NVARCHAR(150),
-            Preco           DECIMAL(10,2),
-            Estoque         INT,
-            Unidade         CHAR(2), 
-            FornecedorId    INT);
+    -- Atribui um valor aleatorio para Fornecedor
+    SELECT TOP 1 @FornecedorId = Id FROM dbo.FORNECEDORES ORDER BY NEWID();
 
-    INSERT INTO @ProdutosTemp VALUES
-        ('P001', 'Caderno Espiral 100 Folhas', 'Caderno de espiral com capa dura, 100 folhas pautadas.', 12.50, 'UN'),
-        ('P002', 'Caneta Esferográfica Azul', 'Caneta esferográfica azul com corpo de plástico.', 1.80, 'UN'),
-        ('P003', 'Lápis Preto HB', 'Lápis preto HB com ponta de alta qualidade.', 0.50, 'UN'),
-        ('P004', 'Borracha Branca', 'Borracha branca macia para apagar lápis.', 0.30, 'UN'),
-        ('P005', 'Caderno Argolado 200 Folhas', 'Caderno argolado com 200 folhas pautadas.', 20.00, 'UN'),
-        ('P006', 'Estojos de Plástico', 'Estojo de plástico resistente para lápis e canetas.', 8.00, 'UN'),
-        ('P007', 'Marcador de Quadro Branco', 'Marcador de ponta fina para quadro branco.', 3.50, 'UN'),
-        ('P008', 'Papel A4 500 Folhas', 'Papel sulfite A4, 75g, pacote com 500 folhas.', 15.00, 'pacote'),
-        ('P009', 'Tesoura Escolar', 'Tesoura de plástico e aço com ponta afiada.', 4.00, 'UN'),
-        ('P010', 'Calculadora Simples', 'Calculadora básica de 8 dígitos.', 25.00, 'UN');
+    -- Lista Código de produtos por prefixo e sufixo
+    DECLARE @PrefixoCodigosProdutos TABLE (Prefixo CHAR(2));
+    INSERT INTO @PrefixoCodigosProdutos VALUES
+        ('PR'),('CP'),('PC'),('IT'),('DE'),
+        ('KP'),('OP'),('RT'),('JF'),('LR');
 
-    WHILE 1 <= @Quantidade
-    BEGIN
+    DECLARE @SufixoCodigosProdutos TABLE (Sufixo CHAR(3));
+    INSERT INTO @SufixoCodigosProdutos VALUES
+        ('001'),('138'),('684'),('657'),('987'),('486'),('552'),('342'),('219'),('185'),
+        ('163'),('094'),('415'),('875'),('726'),('801'),('749'),('924'),('527'),('386');
+    
+    DECLARE @UnidadesMedida TABLE (Unidade CHAR(2));
+    INSERT INTO @UnidadesMedida VALUES
+        ('UN'),('KG'),('CX'),('PC'),('MT'),('LT');
+
+    WHILE @i <= @Quantidade
+    BEGIN        
+        -- Atribui um novo valor aleatorio para Fornecedor
+        IF @Quantidade % 4 = 0
+            SELECT TOP 1 @FornecedorId = Id FROM dbo.FORNECEDORES ORDER BY NEWID();
+
+        DECLARE
+            @PrefixoCodigo  CHAR(2) = (SELECT TOP 1 * FROM @PrefixoCodigosProdutos ORDER BY NEWID()),
+            @SufixoCodigo   CHAR(3) = (SELECT TOP 1 * FROM @SufixoCodigosProdutos  ORDER BY NEWID()),
+            @PrecoCompra    DECIMAL(10,2) = ROUND((RAND() * 200) + 10, 2),
+            @UN             CHAR(2) = (SELECT TOP 1 * FROM @UnidadesMedida ORDER BY NEWID());
         
-        
-        DECLARE @Produtos
-        
-       -- SET @NomeProduto = CONCAT('Produto ', @i);
+        INSERT INTO dbo.PRODUTOS (Codigo,Nome,Descricao,PrecoVenda,PrecoCompra,Custo,Estoque,Unidade,FornecedorId)
+        VALUES (
+            CONCAT(@PrefixoCodigo,@SufixoCodigo),
+            CONCAT('Produto',@PrefixoCodigo,@SufixoCodigo),
+            CONCAT('Descrição do Produto',@PrefixoCodigo,@SufixoCodigo),
+            @PrecoCompra*1,15*1,75,
+            @PrecoCompra,
+            @PrecoCompra*1,15,
+            ROUND(RAND() * 29 + 1, 0),
+            @UN,
+            @FornecedorId
+        );
 
-            INSERT INTO Produtos (Nome, Descricao, Preco, Estoque, Unidade, FornecedorId)
-            VALUES (
-                @NomeProduto,
-                CONCAT('Descrição do ', @NomeProduto),
-                ROUND((RAND() * 500) + 10, 2),
-                (ABS(CHECKSUM(NEWID())) % 100) + 1,
-                'UN',
-                @FornecedorId
-            );
-
-            --SET @j += 1;
-            
+        SET @i += 1;            
     END;
 END;
 GO
 
-CREATE OR ALTER PROCEDURE dbo.usp_GerarEntradaGenerica
+CREATE OR ALTER PROCEDURE dbo.usp_PopulaEntradaItens
     @NumeroNotaFiscal    NVARCHAR(20),
     @Serie               NVARCHAR(10),
     @ChaveAcesso         CHAR(44),
@@ -344,9 +348,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_GerarEntradaGenerica
     @UsuarioCadastro     NVARCHAR(100),
     @Itens TABLE
     (
-        NomeProduto       NVARCHAR(80),
-        Descricao         NVARCHAR(150),
-        Unidade           CHAR(2),
+        CodigoProduto     NVARCHAR(5),
         Quantidade        INT,
         PrecoUnitario     DECIMAL(10,2),
         ICMS_Aliquota     DECIMAL(5,2),
@@ -360,9 +362,7 @@ BEGIN
 
     DECLARE @FornecedorId INT, @EntradaId INT;
 
-    -------------------------------------------------------------
-    -- 1️⃣ LOCALIZA OU CADASTRA O FORNECEDOR
-    -------------------------------------------------------------
+    -- Localiza ou cadastra o fornecedor    
     SELECT @FornecedorId = Id 
     FROM Fornecedores 
     WHERE CNPJ = @FornecedorCNPJ;
@@ -373,12 +373,10 @@ BEGIN
         SET @FornecedorId = SCOPE_IDENTITY();
     END
 
-    -------------------------------------------------------------
-    -- 2️⃣ INSERE A CABEÇA DA NOTA (TABELA ENTRADAS)
-    -------------------------------------------------------------
+    -- Insere a cabeçalho da nota
     INSERT INTO dbo.ENTRADAS (NumeroNotaFiscal, Serie, ChaveAcesso, DataEmissao, FornecedorId,
                               ValorTotal, ICMS_Total, IPI_Total, PIS_Total, COFINS_Total,
-                              Observacoes, UsuarioCadastro, Ativo)
+                              Observacoes, UsuarioCadastro)
     SELECT 
         @NumeroNotaFiscal, @Serie, @ChaveAcesso, @DataEmissao, @FornecedorId,
         SUM((I.Quantidade * I.PrecoUnitario) + ((I.Quantidade * I.PrecoUnitario) * 
@@ -387,40 +385,34 @@ BEGIN
         SUM((I.Quantidade * I.PrecoUnitario) * (I.IPI_Aliquota / 100)),
         SUM((I.Quantidade * I.PrecoUnitario) * (I.PIS_Aliquota / 100)),
         SUM((I.Quantidade * I.PrecoUnitario) * (I.COFINS_Aliquota / 100)),
-        'Entrada gerada automaticamente', @UsuarioCadastro, 1
+        'Entrada gerada automaticamente', @UsuarioCadastro
     FROM @Itens AS I;
 
     SET @EntradaId = SCOPE_IDENTITY();
 
-    -------------------------------------------------------------
-    -- 3️⃣ INSERE ITENS E CRIA PRODUTOS SE NÃO EXISTIREM
-    -------------------------------------------------------------
-    DECLARE @ProdutoId INT, 
-            @ICMS_Valor DECIMAL(10,2),
-            @IPI_Valor DECIMAL(10,2),
-            @PIS_Valor DECIMAL(10,2),
-            @COFINS_Valor DECIMAL(10,2);
+    -- Insere itens da nota
+    DECLARE 
+        @ICMS_Valor     DECIMAL(10,2),
+        @IPI_Valor      DECIMAL(10,2),
+        @PIS_Valor      DECIMAL(10,2),
+        @COFINS_Valor   DECIMAL(10,2);
 
-    DECLARE cur CURSOR FOR
-        SELECT NomeProduto, Descricao, Unidade, Quantidade, PrecoUnitario, 
-               ICMS_Aliquota, IPI_Aliquota, PIS_Aliquota, COFINS_Aliquota
+    DECLARE cur_TabelaItens CURSOR FOR
+        SELECT CodigoProduto,Quantidade,PrecoUnitario,ICMS_Aliquota,IPI_Aliquota,PIS_Aliquota,COFINS_Aliquota
         FROM @Itens;
 
     DECLARE 
-        @NomeProduto NVARCHAR(80),
-        @Descricao NVARCHAR(150),
-        @Unidade CHAR(2),
-        @Quantidade INT,
-        @PrecoUnitario DECIMAL(10,2),
-        @ICMS_Aliquota DECIMAL(5,2),
-        @IPI_Aliquota DECIMAL(5,2),
-        @PIS_Aliquota DECIMAL(5,2),
-        @COFINS_Aliquota DECIMAL(5,2);
+        @CodigoProduto      NVARCHAR(5),
+        @Quantidade         INT,
+        @PrecoUnitario      DECIMAL(10,2),
+        @ICMS_Aliquota      DECIMAL(5,2),
+        @IPI_Aliquota       DECIMAL(5,2),
+        @PIS_Aliquota       DECIMAL(5,2),
+        @COFINS_Aliquota    DECIMAL(5,2);
 
-    OPEN cur;
-    FETCH NEXT FROM cur INTO 
-        @NomeProduto, @Descricao, @Unidade, @Quantidade, @PrecoUnitario,
-        @ICMS_Aliquota, @IPI_Aliquota, @PIS_Aliquota, @COFINS_Aliquota;
+    OPEN cur_TabelaItens;
+    FETCH NEXT FROM cur_TabelaItens INTO 
+        @CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@IPI_Aliquota,@PIS_Aliquota,@COFINS_Aliquota;
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
@@ -428,58 +420,21 @@ BEGIN
         SET @ICMS_Valor   = (@PrecoUnitario * @Quantidade) * (@ICMS_Aliquota / 100);
         SET @IPI_Valor    = (@PrecoUnitario * @Quantidade) * (@IPI_Aliquota / 100);
         SET @PIS_Valor    = (@PrecoUnitario * @Quantidade) * (@PIS_Aliquota / 100);
-        SET @COFINS_Valor = (@PrecoUnitario * @Quantidade) * (@COFINS_Aliquota / 100);
+        SET @COFINS_Valor = (@PrecoUnitario * @Quantidade) * (@COFINS_Aliquota / 100);        
 
-        -----------------------------------------------------
-        -- Verifica se o produto já existe
-        -----------------------------------------------------
-        SELECT @ProdutoId = Id FROM Produtos WHERE Nome = @NomeProduto;
-
-        IF @ProdutoId IS NULL
-        BEGIN
-            INSERT INTO Produtos (Codigo, Nome, Descricao, Preco, PrecoCompra, Custo, Estoque, Unidade, FornecedorId)
-            VALUES (
-                RIGHT('00000' + CAST(ABS(CHECKSUM(NEWID())) % 99999 AS VARCHAR(5)), 5),
-                @NomeProduto, @Descricao,
-                @PrecoUnitario, @PrecoUnitario, 
-                @PrecoUnitario + ((@ICMS_Valor + @IPI_Valor + @PIS_Valor + @COFINS_Valor) / NULLIF(@Quantidade, 0)),
-                @Quantidade, @Unidade, @FornecedorId
-            );
-
-            SET @ProdutoId = SCOPE_IDENTITY();
-        END
-        ELSE
-        BEGIN
-            UPDATE Produtos
-            SET Estoque = Estoque + @Quantidade,
-                PrecoCompra = @PrecoUnitario,
-                Custo = @PrecoUnitario + ((@ICMS_Valor + @IPI_Valor + @PIS_Valor + @COFINS_Valor) / NULLIF(@Quantidade, 0))
-            WHERE Id = @ProdutoId;
-        END
-
-        -----------------------------------------------------
         -- Insere item da nota
-        -----------------------------------------------------
-        INSERT INTO EntradaItens (
-            EntradaId, ProdutoId, Quantidade, PrecoUnitario,
-            ICMS_Aliquota, ICMS_Valor, IPI_Aliquota, IPI_Valor,
-            PIS_Aliquota, PIS_Valor, COFINS_Aliquota, COFINS_Valor, 
-            CustoUnitario
-        )
-        VALUES (
-            @EntradaId, @ProdutoId, @Quantidade, @PrecoUnitario,
-            @ICMS_Aliquota, @ICMS_Valor, @IPI_Aliquota, @IPI_Valor,
-            @PIS_Aliquota, @PIS_Valor, @COFINS_Aliquota, @COFINS_Valor,
-            @PrecoUnitario + ((@ICMS_Valor + @IPI_Valor + @PIS_Valor + @COFINS_Valor) / NULLIF(@Quantidade, 0))
-        );
-
+        INSERT INTO EntradaItens (EntradaId,CodigoProduto,Quantidade,PrecoUnitario,ICMS_Aliquota,ICMS_Valor,IPI_Aliquota, 
+                                  IPI_Valor,PIS_Aliquota,PIS_Valor,COFINS_Aliquota,COFINS_Valor,CustoUnitario)
+        VALUES (@EntradaId,@CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@ICMS_Valor,@IPI_Aliquota,@IPI_Valor,
+                @PIS_Aliquota, @PIS_Valor, @COFINS_Aliquota, @COFINS_Valor,
+                @PrecoUnitario + ((@ICMS_Valor + @IPI_Valor + @PIS_Valor + @COFINS_Valor) / NULLIF(@Quantidade, 0)));
+                
         FETCH NEXT FROM cur INTO 
-            @NomeProduto, @Descricao, @Unidade, @Quantidade, @PrecoUnitario,
-            @ICMS_Aliquota, @IPI_Aliquota, @PIS_Aliquota, @COFINS_Aliquota;
+            @CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@IPI_Aliquota,@PIS_Aliquota,@COFINS_Aliquota;
     END
 
-    CLOSE cur;
-    DEALLOCATE cur;
+    CLOSE cur_TabelaItens;
+    DEALLOCATE cur_TabelaItens;
 
     PRINT 'Entrada de nota fiscal registrada com sucesso!';
 END;
