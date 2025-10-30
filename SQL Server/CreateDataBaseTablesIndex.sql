@@ -96,8 +96,8 @@ CREATE TABLE FORNECEDORES (
 );
 GO
 
---DROP TABLE VendaItens;
---DROP TABLE PRODUTOS;
+DROP TABLE VendaItens;
+DROP TABLE PRODUTOS;
 CREATE TABLE PRODUTOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
     Codigo          VARCHAR(5) UNIQUE NOT NULL,
@@ -108,7 +108,6 @@ CREATE TABLE PRODUTOS (
     Custo           DECIMAL(10,2) NOT NULL CHECK (Custo >= 0),
     Estoque         INT NOT NULL DEFAULT 0 CHECK (Estoque >= 0),
     Unidade         CHAR(2) NOT NULL, 
-    FornecedorId    INT NOT NULL FOREIGN KEY REFERENCES Fornecedores(Id),
     DataCadastro    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     Ativo           BIT NOT NULL DEFAULT 1
 );
@@ -121,8 +120,8 @@ CREATE TABLE MOVIMENTACOESESTOQUE(
     CodigoProduto       NVARCHAR(5) NOT NULL,
     NomeProduto         NVARCHAR(80) NOT NULL,
     Quantidade          INT NOT NULL,
-    Preco               DECIMAL(10,2) NOT NULL,
-    ValorVendido        DECIMAL(10,2) NOT NULL,
+    PrecoVenda          DECIMAL(10,2) NOT NULL,
+    ValorVendido        DECIMAL(10,2),
     Custo               DECIMAL(10,2) NOT NULL,
     DocumentoId         INT,
     Observacao          NVARCHAR(80),
@@ -140,14 +139,14 @@ CREATE TABLE ENTRADAS (
     ChaveAcesso         CHAR(44) UNIQUE,
     DataEmissao         DATETIME2 NOT NULL,
     DataEntrada         DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-    FornecedorId        INT NOT NULL FOREIGN KEY REFERENCES Fornecedores(Id),
+    FornecedorId        INT NOT NULL FOREIGN KEY REFERENCES FORNECEDORES(Id),
     ValorTotal          DECIMAL(12,2) CHECK (ValorTotal >= 0),
     ICMS_Total          DECIMAL(10,2) DEFAULT 0 CHECK (ICMS_Total >= 0),
     IPI_Total           DECIMAL(10,2) DEFAULT 0 CHECK (IPI_Total >= 0),
     PIS_Total           DECIMAL(10,2) DEFAULT 0 CHECK (PIS_Total >= 0),
     COFINS_Total        DECIMAL(10,2) DEFAULT 0 CHECK (COFINS_Total >= 0),
     Observacoes         NVARCHAR(500),
-    UsuarioCadastro     NVARCHAR(100)
+    UsuarioCadastro     INT NOT NULL FOREIGN KEY REFERENCES USUARIOS(Id)
 );
 GO
 

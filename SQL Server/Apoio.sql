@@ -98,7 +98,7 @@ BEGIN
         SET @resto = @soma % 11;
         SET @d2 = CASE WHEN @resto < 2 THEN 0 ELSE 11 - @resto END;
 
-        SET @cnpj = @base + CAST(@d1 AS CHAR(1)) + CAST(@d2 AS CHAR(1));
+        SET @CNPJ = @base + CAST(@d1 AS CHAR(1)) + CAST(@d2 AS CHAR(1));
                 
         IF NOT EXISTS (SELECT 1 FROM dbo.FORNECEDORES WHERE CNPJ = @CNPJ)
             BREAK; -- CNPJ é único → sai do loop
@@ -110,12 +110,14 @@ BEGIN
 END;
 GO
 
-CREATE OR ALTER PROCEDURE dbo.usp_GerarChavenF   
+CREATE OR ALTER PROCEDURE dbo.usp_GerarChaveNF   
     @NumeroNF       CHAR(9),
     @Serie          CHAR(3),
     @Modelo         CHAR(2),
     @CNPJ           CHAR(14),
-    @cUF            CHAR(2)
+    @cUF            CHAR(2),
+    @ChaveFinal     CHAR(44) OUTPUT
+
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -146,11 +148,33 @@ BEGIN
     SET @Resto = @Soma % 11;
     SET @DV = CASE WHEN @Resto = 0 OR @Resto = 1 THEN 0 ELSE 11 - @Resto END;
 
-    DECLARE @ChaveFinal CHAR(44) = @ChaveSemDV + CAST(@DV AS CHAR(1));
-
-    -- Retrona o resultado
-    RETURN @ChaveFinal;
+    SET @ChaveFinal = @ChaveSemDV + CAST(@DV AS CHAR(1));
 END
+GO
+
+CREATE OR ALTER PROCEDURE dbo.usp_GerarCodigoProduto
+    @CODIGO CHAR(5) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Lista Código de produtos por prefixo e sufixo
+    DECLARE @PrefixoCodigosProdutos TABLE (Prefixo CHAR(2));
+    INSERT INTO @PrefixoCodigosProdutos VALUES
+        ('PR'),('CP'),('PC'),('IT'),('DE'),
+        ('KP'),('OP'),('RT'),('JF'),('LR');
+
+    DECLARE @SufixoCodigosProdutos TABLE (Sufixo CHAR(3));
+    INSERT INTO @SufixoCodigosProdutos VALUES
+        ('001'),('138'),('684'),('657'),('987'),('486'),('552'),('342'),('219'),('185'),
+        ('163'),('094'),('415'),('875'),('726'),('801'),('749'),('924'),('527'),('386');
+
+    DECLARE
+        @PrefixoCodigo  CHAR(2) = (SELECT TOP 1 * FROM @PrefixoCodigosProdutos ORDER BY NEWID()),
+        @SufixoCodigo   CHAR(3) = (SELECT TOP 1 * FROM @SufixoCodigosProdutos  ORDER BY NEWID());
+    
+    SET @CODIGO = CONCAT(@PrefixoCodigo,@SufixoCodigo);
+END;
 GO
 
 -- Gera clientes aleatórios para popular a tabela CLIENTES
@@ -256,30 +280,28 @@ GO
 -- Gera Fornecedores aleatórios para popular a tabela FORNECEDORES
 CREATE OR ALTER PROCEDURE dbo.usp_PopularFornecedores
     @QtdFornecedores    INT,
-    @FornecedorNome     NVARCHAR(150) = 'Fornecedor',
-    @RazaoSocial        NVARCHAR(150) = 'Razao Social',
-    @CNPJ               CHAR(14),    
-    @Cidade             CHAR(30),
-    @UF                 CHAR(2)
+    @CNPJ               CHAR(14) = NULL,
+    @UF                 CHAR(2)  = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
 
     DECLARE 
         @FornecedorId   INT,
+        @Cidade         CHAR(30),
         @DDD            CHAR(4),
         @i              INT = 1;
 
     IF EXISTS (SELECT 1 FROM dbo.FORNECEDORES)
         SELECT @FornecedorId = MAX(Id) FROM dbo.FORNECEDORES;
     ELSE
-        SET @FornecedorId = @i;
+        SET @FornecedorId = @@IDENTITY;
 
     WHILE @i <= @QtdFornecedores
     BEGIN
         -- Gera CNPJ único
         IF @CNPJ IS NULL
-            SET @CNPJ = dbo.usp_GerarCNPJ();
+            EXEC dbo.usp_GerarCNPJ @CNPJ = @CNPJ OUTPUT;
 
         -- Lista de cidades com UF e DDD
         DECLARE @Cidades TABLE (Cidade NVARCHAR(50), UF CHAR(2), DDD CHAR(4));
@@ -292,16 +314,16 @@ BEGIN
             ('@gmail.com'),('@outlook.com'),('@yahoo.com'),('@icloud.com');
         
         -- atribui valores as variáveis 
-        IF @Cidade IS NULL AND @UF IS NULL
+        IF @UF IS NULL
             SELECT TOP 1 @Cidade = Cidade, @UF = UF, @DDD = DDD FROM @Cidades ORDER BY NEWID();
         ELSE
-            SELECT TOP 1 @DDD = DDD FROM @Cidades WHERE Cidade = @Cidade;
+            SELECT TOP 1 @Cidade = Cidade, @DDD = DDD FROM @Cidades WHERE UF = @UF;
 
         -- Insere fornecedor
         INSERT INTO dbo.FORNECEDORES (NomeFantasia, RazaoSocial, CNPJ, Email, Telefone, Cidade, UF)
         VALUES (
-            CONCAT(@FornecedorNome, @FornecedorId),
-            CONCAT(@RazaoSocial, @FornecedorId),
+            CONCAT('Fornecedor', @FornecedorId),
+            CONCAT('Razao Social', @FornecedorId),
             @CNPJ,
             CONCAT('fornecedor', @FornecedorId, (SELECT TOP 1 Provedor FROM @ProvedoresEmail ORDER BY NEWID())),
             CONCAT(@DDD, '9', RIGHT('00000000' + CAST(ABS(CHECKSUM(NEWID())) % 99999999 AS VARCHAR(8)), 8)),
@@ -310,6 +332,7 @@ BEGIN
         );
         
         SET @FornecedorId = SCOPE_IDENTITY();
+        SET @CNPJ = NULL;
         SET @i += 1;
     END;
 END;
@@ -319,61 +342,48 @@ GO
 CREATE OR ALTER PROCEDURE dbo.usp_PopulaProdutos
     @Quantidade INT
 AS
-BEGIN
-    
+BEGIN    
     SET NOCOUNT ON;
 
-    -- Só cadastra se existe fornecedor para vincular
-        IF NOT EXISTS (SELECT TOP 1 FROM dbo.FORNECEDORES)
-            PRINT 'Tabela fornecedores vazia.';
-            RETURN;
-
-    DECLARE
-        @FornecedorId   INT,
-        @i              INT = 1;
-
-    -- Atribui um valor aleatorio para Fornecedor
-    SELECT TOP 1 @FornecedorId = Id FROM dbo.FORNECEDORES ORDER BY NEWID();
-
-    -- Lista Código de produtos por prefixo e sufixo
-    DECLARE @PrefixoCodigosProdutos TABLE (Prefixo CHAR(2));
-    INSERT INTO @PrefixoCodigosProdutos VALUES
-        ('PR'),('CP'),('PC'),('IT'),('DE'),
-        ('KP'),('OP'),('RT'),('JF'),('LR');
-
-    DECLARE @SufixoCodigosProdutos TABLE (Sufixo CHAR(3));
-    INSERT INTO @SufixoCodigosProdutos VALUES
-        ('001'),('138'),('684'),('657'),('987'),('486'),('552'),('342'),('219'),('185'),
-        ('163'),('094'),('415'),('875'),('726'),('801'),('749'),('924'),('527'),('386');
+    DECLARE @i INT = 1;
     
     DECLARE @UnidadesMedida TABLE (Unidade CHAR(2));
     INSERT INTO @UnidadesMedida VALUES
         ('UN'),('KG'),('CX'),('PC'),('MT'),('LT');
 
     WHILE @i <= @Quantidade
-    BEGIN        
-        -- Atribui um novo valor aleatorio para Fornecedor
-        IF @Quantidade % 4 = 0
-            SELECT TOP 1 @FornecedorId = Id FROM dbo.FORNECEDORES ORDER BY NEWID();
-
+    BEGIN
         DECLARE
-            @PrefixoCodigo  CHAR(2) = (SELECT TOP 1 * FROM @PrefixoCodigosProdutos ORDER BY NEWID()),
-            @SufixoCodigo   CHAR(3) = (SELECT TOP 1 * FROM @SufixoCodigosProdutos  ORDER BY NEWID()),
-            @PrecoCompra    DECIMAL(10,2) = ROUND((RAND() * 200) + 10, 2),
+            @Codigo         CHAR(5),
+            @PrecoCompra    DECIMAL(10,2) = ROUND((RAND() * 250) + 8, 2),
             @UN             CHAR(2) = (SELECT TOP 1 * FROM @UnidadesMedida ORDER BY NEWID());
+
+        EXEC dbo.usp_GerarCodigoProduto @CODIGO = @Codigo OUTPUT;
         
-        INSERT INTO dbo.PRODUTOS (Codigo,Nome,Descricao,PrecoVenda,PrecoCompra,Custo,Estoque,Unidade,FornecedorId)
-        VALUES (
-            CONCAT(@PrefixoCodigo,@SufixoCodigo),
-            CONCAT('Produto',@PrefixoCodigo,@SufixoCodigo),
-            CONCAT('Descrição do Produto',@PrefixoCodigo,@SufixoCodigo),
-            @PrecoCompra*1,15*1,75,
-            @PrecoCompra,
-            @PrecoCompra*1,15,
-            ROUND(RAND() * 29 + 1, 0),
-            @UN,
-            @FornecedorId
-        );
+        IF NOT EXISTS (SELECT 1 FROM dbo.PRODUTOS WHERE Codigo = @Codigo)
+        BEGIN
+            INSERT INTO dbo.PRODUTOS (Codigo,Nome,Descricao,PrecoVenda,PrecoCompra,Custo,Estoque,Unidade)
+            VALUES (
+                @Codigo,
+                CONCAT('Produto',@Codigo),
+                CONCAT('Descrição do Produto',@Codigo),
+                @PrecoCompra*1.15*1.75,
+                @PrecoCompra,
+                @PrecoCompra*1.15,
+                ROUND(RAND() * 10 + 1, 0),
+                @UN
+            );
+        END
+        ELSE 
+        BEGIN
+            UPDATE P
+            SET P.PrecoVenda = @PrecoCompra*1.15*1.75, 
+                P.PrecoCompra = @PrecoCompra,
+                P.Custo = @PrecoCompra*1.15,
+                P.Estoque = ROUND(RAND() * 10 + 1, 0)
+            FROM dbo.PRODUTOS P
+            WHERE Codigo = @Codigo
+        END
 
         SET @i += 1;            
     END;
@@ -381,41 +391,32 @@ END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.usp_PopulaEntradaItens
-    @NumeroNotaFiscal    NVARCHAR(9),
-    @Serie               NVARCHAR(3),
-    @Modelo              NVARCHAR(2),
-    @ChaveAcesso         CHAR(44),
-    @DataEmissao         DATETIME2,
-    @FornecedorCNPJ      CHAR(14),
-    @FornecedorNome      NVARCHAR(150),
-    @FornecedorCidade    NVARCHAR(100),
-    @FornecedorUF        CHAR(2),
-    @UsuarioCadastro     NVARCHAR(100),
-    @Itens TABLE
-    (
-        CodigoProduto     NVARCHAR(5),
-        Quantidade        INT,
-        PrecoUnitario     DECIMAL(10,2),
-        ICMS_Aliquota     DECIMAL(5,2),
-        IPI_Aliquota      DECIMAL(5,2),
-        PIS_Aliquota      DECIMAL(5,2),
-        COFINS_Aliquota   DECIMAL(5,2)
-    )
+    @NumeroNotaFiscal   NVARCHAR(9),
+    @Serie              NVARCHAR(3),
+    @Modelo             NVARCHAR(2),
+    @ChaveAcesso        NVARCHAR(44),
+    @DataEmissao        DATETIME2,
+    @FornecedorCNPJ     CHAR(14),
+    @UsuarioCadastro    INT,
+    @TabelaItens        TypeTableItens READONLY
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @FornecedorId INT, @EntradaId INT;
+    DECLARE 
+        @FornecedorId   INT, 
+        @UF             CHAR(2) = IIF(SUBSTRING(@ChaveAcesso, 1, 2) = 53,'DF','GO'),
+        @EntradaId      INT;
 
     -- Localiza ou cadastra o fornecedor    
-    SELECT @FornecedorId = Id 
+    SELECT @FornecedorId = Id
     FROM Fornecedores 
     WHERE CNPJ = @FornecedorCNPJ;
 
     IF @FornecedorId IS NULL
     BEGIN
-        EXEC dbo.usp_PopularFornecedores(1,@FornecedorNome,@FornecedorNome,@FornecedorCNPJ,@FornecedorCidade,@FornecedorUF);
-        SET @FornecedorId = SCOPE_IDENTITY();
+        EXEC dbo.usp_PopularFornecedores 1,@FornecedorCNPJ,@UF;
+        SET @FornecedorId = @@IDENTITY;
     END
 
     -- Insere a cabeçalho da nota
@@ -431,7 +432,7 @@ BEGIN
         SUM((I.Quantidade * I.PrecoUnitario) * (I.PIS_Aliquota / 100)),
         SUM((I.Quantidade * I.PrecoUnitario) * (I.COFINS_Aliquota / 100)),
         'Entrada gerada automaticamente', @UsuarioCadastro
-    FROM @Itens AS I;
+    FROM @TabelaItens I;
 
     SET @EntradaId = SCOPE_IDENTITY();
 
@@ -444,7 +445,7 @@ BEGIN
 
     DECLARE cur_TabelaItens CURSOR FOR
         SELECT CodigoProduto,Quantidade,PrecoUnitario,ICMS_Aliquota,IPI_Aliquota,PIS_Aliquota,COFINS_Aliquota
-        FROM @Itens;
+        FROM @TabelaItens;
 
     DECLARE 
         @CodigoProduto      NVARCHAR(5),
@@ -468,13 +469,13 @@ BEGIN
         SET @COFINS_Valor = (@PrecoUnitario * @Quantidade) * (@COFINS_Aliquota / 100);        
 
         -- Insere item da nota
-        INSERT INTO EntradaItens (EntradaId,CodigoProduto,Quantidade,PrecoUnitario,ICMS_Aliquota,ICMS_Valor,IPI_Aliquota, 
+        INSERT INTO dbo.EntradaItens (EntradaId,CodigoProduto,Quantidade,PrecoUnitario,ICMS_Aliquota,ICMS_Valor,IPI_Aliquota, 
                                   IPI_Valor,PIS_Aliquota,PIS_Valor,COFINS_Aliquota,COFINS_Valor,CustoUnitario)
         VALUES (@EntradaId,@CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@ICMS_Valor,@IPI_Aliquota,@IPI_Valor,
                 @PIS_Aliquota, @PIS_Valor, @COFINS_Aliquota, @COFINS_Valor,
                 @PrecoUnitario + ((@ICMS_Valor + @IPI_Valor + @PIS_Valor + @COFINS_Valor) / NULLIF(@Quantidade, 0)));
                 
-        FETCH NEXT FROM cur INTO 
+        FETCH NEXT FROM cur_TabelaItens INTO 
             @CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@IPI_Aliquota,@PIS_Aliquota,@COFINS_Aliquota;
     END
 
@@ -486,23 +487,14 @@ END;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.usp_GeraDadosEntradaItens
-    @QtdNotas   INT
+    @QtdNotas INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE
-        @NumeroNotaFiscal    NVARCHAR(9),
-        @Serie               NVARCHAR(3),
-        @Modelo              NVARCHAR(2),
-        @ChaveAcesso         CHAR(44),
-        @DataEmissao         DATETIME2,
-        @FornecedorCNPJ      CHAR(14),
-        @FornecedorNome      NVARCHAR(150),
-        @FornecedorCidade    NVARCHAR(100),
-        @FornecedorUF        CHAR(2),
-        @UsuarioCadastro     NVARCHAR(100),
-        @Itens TABLE
+    -- CRIE A TABELA TEMPORARIA
+    IF NOT EXISTS (SELECT * FROM sys.types WHERE  is_table_type = 1 AND name = 'TypeTableItens')
+        CREATE TYPE TypeTableItens AS TABLE
         (
             CodigoProduto     NVARCHAR(5),
             Quantidade        INT,
@@ -511,19 +503,111 @@ BEGIN
             IPI_Aliquota      DECIMAL(5,2),
             PIS_Aliquota      DECIMAL(5,2),
             COFINS_Aliquota   DECIMAL(5,2)
-        )
+        );
+    
+    -- LOOPING COM QUANTIDADE DE NOTAS
+    DECLARE 
+        @i  INT = 0,
+        @j  INT;
 
-    -- GERAR O CABEÇALHO DA NOTA       
-        @FornecedorCNPJ CHAR(14) = dbo.usp_GerarCNPJ,
-        @Modelo CHAR(2) = '55',
-        @Serie CHAR(3) = RIGHT('000' + CAST(ABS(CHECKSUM(NEWID())) % 999 + 1 AS VARCHAR(3)), 3),
-        @NumeroNotaFiscal CHAR(9) = RIGHT('000000000' + CAST(ABS(CHECKSUM(NEWID())) % 999999999 AS VARCHAR(9)), 9),
+    WHILE @i < @QtdNotas
+    BEGIN
+        SET @j = 0;
+
+        -- GERAR O CABEÇALHO DA NOTA
+        DECLARE
+            @NumeroNotaFiscal   NVARCHAR(9) = RIGHT('000000000' + CAST(ABS(CHECKSUM(NEWID())) % 999999999 AS VARCHAR(9)), 9),
+            @Serie              NVARCHAR(3) = RIGHT('000' + CAST(ABS(CHECKSUM(NEWID())) % 002 + 1 AS VARCHAR(3)), 3),
+            @Modelo             NVARCHAR(2) = '55',
+            @ChaveAcesso        CHAR(44),
+            @DataEmissao        DATETIME2   = DATEADD(DAY, ROUND(RAND() * 305,0), '2025-01-01'),
+            @FornecedorCNPJ     CHAR(14),
+            @FornecedorUF       CHAR(2),
+            @UsuarioCadastro    INT         = 1,
+            @QtdProdutos        INT         = ROUND(ABS(CHECKSUM(NEWID())) % 3 + 3 ,0),
+            @Itens              TypeTableItens;
+        
+        EXEC dbo.usp_GerarCNPJ @CNPJ = @FornecedorCNPJ OUTPUT;
+
+        DECLARE @Aliquotas TABLE (
+            UF              CHAR(2),
+            ICMS_Aliquota   DECIMAL(5,2),
+            IPI_Aliquota    DECIMAL(5,2),
+            PIS_Aliquota    DECIMAL(5,2),
+            COFINS_Aliquota DECIMAL(5,2)
+        );
+
+        INSERT INTO @Aliquotas VALUES
+        ('53',20,0,1.65,7.6),
+        ('52',19,0,1.65,7.6);
+        
+        SELECT @FornecedorUF = UF FROM @Aliquotas ORDER BY NEWID();
+       
+        -- GERAR CHAVE DE ACESSO
+        EXEC dbo.usp_GerarChaveNF 
+            @NumeroNotaFiscal,@Serie,@Modelo,@FornecedorCNPJ, @FornecedorUF, @ChaveFinal = @ChaveAcesso OUTPUT;
+
+        WHILE @j < @QtdProdutos
+        BEGIN
+            -- GERAR OS ITENS DA NOTAS COM IMPOSTOS
+            DECLARE
+                @CodigoProduto     NVARCHAR(5),
+                @Quantidade        INT              = ROUND(ABS(CHECKSUM(NEWID())) % 10 + 1 ,0),
+                @PrecoUnitario     DECIMAL(10,2)    = ROUND(ABS(CHECKSUM(NEWID())) % 250 + 8 ,2),
+                @ICMS_Aliquota     DECIMAL(5,2),
+                @IPI_Aliquota      DECIMAL(5,2),
+                @PIS_Aliquota      DECIMAL(5,2),
+                @COFINS_Aliquota   DECIMAL(5,2);
+                       
+            EXEC dbo.usp_GerarCodigoProduto @CODIGO = @CodigoProduto OUTPUT;
+
+            SELECT 
+            @ICMS_Aliquota = ICMS_Aliquota, @IPI_Aliquota = IPI_Aliquota, @PIS_Aliquota = PIS_Aliquota, @COFINS_Aliquota = COFINS_Aliquota
+            FROM
+            @Aliquotas
+            WHERE UF = @FornecedorUF;
+
+            INSERT INTO @Itens 
+            VALUES(@CodigoProduto,@Quantidade,@PrecoUnitario,@ICMS_Aliquota,@IPI_Aliquota,@PIS_Aliquota,@COFINS_Aliquota);
+
+            SET @j += 1;
+
+        END;
+
+        -- ENVIA A NOTA PARA POPULADOR
+        EXEC dbo.usp_PopulaEntradaItens @NumeroNotaFiscal,@Serie,@Modelo,@ChaveAcesso,@DataEmissao,@FornecedorCNPJ,@UsuarioCadastro,@Itens;
+
+        -- Limpa a tabela de itens
+        DELETE FROM @Itens;
+
+        -- FINALIZA LOOPING NOTAS
+        SET @i += 1;
+    END;
+END;
+GO
+
+EXEC dbo.usp_PopulaProdutos 10
 
 
-    -- GERAR O FORNCEDOR
+SELECT * FROM PRODUTOS ORDER BY Codigo
+SELECT * FROM EntradaItens ORDER BY CodigoProduto
+SELECT * FROM ENTRADAS
+SELECT * FROM MOVIMENTACOESESTOQUE
+SELECT * FROM FORNECEDORES
+SELECT * FROM CLIENTES
 
-    -- GERAR OS IMPOSTOS
+DELETE FROM EntradaItens
+DELETE FROM MOVIMENTACOESESTOQUE
+DELETE FROM PRODUTOS
+DELETE FROM ENTRADAS
+DELETE FROM FORNECEDORES
 
-    -- GERAR OS ITENS DA NOTAS COM IMPOSTOS
+UPDATE I SET I.Quantidade = 2 FROM EntradaItens I WHERE ID = 796
+DELETE FROM EntradaItens WHERE ID = 783;
 
-END
+DECLARE @NovoCNPJ CHAR(14);
+EXEC dbo.usp_GerarCNPJ @CNPJ = @NovoCNPJ OUTPUT;
+SELECT @NovoCNPJ AS CNPJGerado;
+
+
+SELECT * FROM sys.objects WHERE type = 'P';
