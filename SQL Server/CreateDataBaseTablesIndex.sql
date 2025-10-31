@@ -1,4 +1,7 @@
-USE master
+ALTER DATABASE Treinamento SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+USE master;
+GO
+
 DROP DATABASE Treinamento;
 GO
 
@@ -15,6 +18,11 @@ CREATE TABLE PERFIS (
     Descricao   NVARCHAR(200)
 );
 GO
+
+--DROP TABLE EntradaItens;
+--DROP TABLE MOVIMENTACOESESTOQUE;
+--DROP TABLE ENTRADAS;
+--DROP TABLE USUARIOS;
 
 CREATE TABLE USUARIOS (
     Id              INT IDENTITY PRIMARY KEY,
@@ -96,8 +104,8 @@ CREATE TABLE FORNECEDORES (
 );
 GO
 
-DROP TABLE VendaItens;
-DROP TABLE PRODUTOS;
+--DROP TABLE VendaItens;
+--DROP TABLE PRODUTOS;
 CREATE TABLE PRODUTOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
     Codigo          VARCHAR(5) UNIQUE NOT NULL,
@@ -125,6 +133,7 @@ CREATE TABLE MOVIMENTACOESESTOQUE(
     Custo               DECIMAL(10,2) NOT NULL,
     DocumentoId         INT,
     Observacao          NVARCHAR(80),
+    UsuarioMovimentacao INT NOT NULL FOREIGN KEY REFERENCES USUARIOS(Id), 
     DataMovimentacao    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
 );
 GO
@@ -172,6 +181,7 @@ GO
 
 CREATE TABLE SERVICOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
+    Codigo          NVARCHAR(6) UNIQUE NOT NULL,
     Nome            NVARCHAR(150) NOT NULL,
     Descricao       NVARCHAR(500),
     Preco           DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
@@ -224,7 +234,6 @@ GO
 
 -- Cria indices para tabelas
 CREATE INDEX IX_Produtos_Nome ON Produtos(Nome);
-CREATE INDEX IX_Produtos_FornecedorId ON Produtos(FornecedorId);
 GO
 
 CREATE INDEX IX_Servicos_Nome ON Servicos(Nome);

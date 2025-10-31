@@ -1,4 +1,7 @@
-﻿-- Tenta gerar CPFs aleatórios até um máximo de 20 tentaivas
+﻿USE Treinamento;
+GO
+
+-- Tenta gerar CPFs aleatórios até um máximo de 20 tentaivas
 CREATE OR ALTER PROCEDURE dbo.usp_GerarCPF
     @CPF CHAR(11) OUTPUT
 AS
@@ -110,6 +113,7 @@ BEGIN
 END;
 GO
 
+-- Gera Chaves de acesso para NFs
 CREATE OR ALTER PROCEDURE dbo.usp_GerarChaveNF   
     @NumeroNF       CHAR(9),
     @Serie          CHAR(3),
@@ -152,6 +156,7 @@ BEGIN
 END
 GO
 
+-- Gera códigos para os produtos
 CREATE OR ALTER PROCEDURE dbo.usp_GerarCodigoProduto
     @CODIGO CHAR(5) OUTPUT
 AS
@@ -176,6 +181,31 @@ BEGIN
     SET @CODIGO = CONCAT(@PrefixoCodigo,@SufixoCodigo);
 END;
 GO
+
+-- Gera UDTTs
+IF TYPE_ID('dbo.TypeTable_EntradaItens') IS NULL
+    CREATE TYPE TypeTable_EntradaItens AS TABLE
+    (
+        CodigoProduto     NVARCHAR(5),
+        Quantidade        INT,
+        PrecoUnitario     DECIMAL(10,2),
+        ICMS_Aliquota     DECIMAL(5,2),
+        IPI_Aliquota      DECIMAL(5,2),
+        PIS_Aliquota      DECIMAL(5,2),
+        COFINS_Aliquota   DECIMAL(5,2)
+    );
+GO
+
+IF TYPE_ID('dbo.TypeTable_VendaItens') IS NULL
+    CREATE TYPE TypeTable_VendaItens AS TABLE
+    (
+        ProdutoId       INT NULL,
+        ServicoId       INT NULL,
+        Quantidade      INT NOT NULL CHECK (Quantidade > 0),
+        PrecoUnitario   DECIMAL(10,2) NOT NULL CHECK (PrecoUnitario >= 0)
+    );
+GO
+
 
 -- Gera clientes aleatórios para popular a tabela CLIENTES
 CREATE OR ALTER PROCEDURE dbo.usp_PopulaClientes
@@ -365,11 +395,11 @@ BEGIN
             INSERT INTO dbo.PRODUTOS (Codigo,Nome,Descricao,PrecoVenda,PrecoCompra,Custo,Estoque,Unidade)
             VALUES (
                 @Codigo,
-                CONCAT('Produto',@Codigo),
-                CONCAT('Descrição do Produto',@Codigo),
-                @PrecoCompra*1.15*1.75,
+                CONCAT('Produto-',@Codigo),
+                CONCAT('Descrição do Produto Produto-',@Codigo),
+                @PrecoCompra*1.30*1.75,
                 @PrecoCompra,
-                @PrecoCompra*1.15,
+                @PrecoCompra*1.30,
                 ROUND(RAND() * 10 + 1, 0),
                 @UN
             );
@@ -390,6 +420,58 @@ BEGIN
 END;
 GO
 
+-- Popula a tabela PRODUTOS
+CREATE OR ALTER PROCEDURE dbo.usp_PopulaServicos
+    @Quantidade INT
+AS
+BEGIN    
+    SET NOCOUNT ON;
+
+    DECLARE @PrefixoCodigos TABLE (Prefixo CHAR(3));
+    INSERT INTO @PrefixoCodigos VALUES
+        ('SER'),('SEV'),('SVC');
+
+    DECLARE @SufixoCodigos TABLE (Sufixo CHAR(3));
+    INSERT INTO @SufixoCodigos VALUES
+        ('001'),('138'),('684'),('657'),('987'),('486'),('552'),('342'),('219'),('185'),
+        ('163'),('094'),('415'),('875'),('726'),('801'),('749'),('924'),('527'),('386');
+
+    DECLARE
+        @Codigo         NVARCHAR(6),
+        @Preco          DECIMAL(10,2),
+        @i              INT = 0;
+
+    WHILE @i < @Quantidade
+    BEGIN
+        
+        SET @Codigo = CONCAT((SELECT TOP 1 * FROM @SufixoCodigos  ORDER BY NEWID()),
+                             (SELECT TOP 1 * FROM @PrefixoCodigos ORDER BY NEWID()));
+        SET @Preco  = ROUND((RAND() * 250) + 8, 2);
+        
+        IF NOT EXISTS (SELECT 1 FROM dbo.SERVICOS WHERE Codigo = @Codigo)
+        BEGIN
+            INSERT INTO dbo.SERVICOS (Codigo,Nome, Descricao,Preco)
+            VALUES (
+                @Codigo,
+                CONCAT('Serviço-',@Codigo),
+                CONCAT('Descrição do Serviço Serviço-',@Codigo),
+                @Preco
+            );
+        END
+        ELSE 
+        BEGIN
+            UPDATE S
+            SET S.Preco = @Preco
+            FROM dbo.SERVICOS S
+            WHERE Codigo = @Codigo
+        END
+
+        SET @i += 1;            
+    END;
+END;
+GO
+
+-- Popula a tabela ENTRADAS e EntradaItens
 CREATE OR ALTER PROCEDURE dbo.usp_PopulaEntradaItens
     @NumeroNotaFiscal   NVARCHAR(9),
     @Serie              NVARCHAR(3),
@@ -398,7 +480,7 @@ CREATE OR ALTER PROCEDURE dbo.usp_PopulaEntradaItens
     @DataEmissao        DATETIME2,
     @FornecedorCNPJ     CHAR(14),
     @UsuarioCadastro    INT,
-    @TabelaItens        TypeTableItens READONLY
+    @TabelaItens        TypeTable_EntradaItens READONLY
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -486,24 +568,12 @@ BEGIN
 END;
 GO
 
+-- Gera dados para populador de notas
 CREATE OR ALTER PROCEDURE dbo.usp_GeraDadosEntradaItens
     @QtdNotas INT
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- CRIE A TABELA TEMPORARIA
-    IF NOT EXISTS (SELECT * FROM sys.types WHERE  is_table_type = 1 AND name = 'TypeTableItens')
-        CREATE TYPE TypeTableItens AS TABLE
-        (
-            CodigoProduto     NVARCHAR(5),
-            Quantidade        INT,
-            PrecoUnitario     DECIMAL(10,2),
-            ICMS_Aliquota     DECIMAL(5,2),
-            IPI_Aliquota      DECIMAL(5,2),
-            PIS_Aliquota      DECIMAL(5,2),
-            COFINS_Aliquota   DECIMAL(5,2)
-        );
     
     -- LOOPING COM QUANTIDADE DE NOTAS
     DECLARE 
@@ -525,7 +595,7 @@ BEGIN
             @FornecedorUF       CHAR(2),
             @UsuarioCadastro    INT         = 1,
             @QtdProdutos        INT         = ROUND(ABS(CHECKSUM(NEWID())) % 3 + 3 ,0),
-            @Itens              TypeTableItens;
+            @Itens              TypeTable_EntradaItens;
         
         EXEC dbo.usp_GerarCNPJ @CNPJ = @FornecedorCNPJ OUTPUT;
 
@@ -586,28 +656,184 @@ BEGIN
 END;
 GO
 
+-- Popula a tabela VENDAS e VendaItens
+CREATE OR ALTER PROCEDURE dbo.usp_PopulaVendas
+    @QtdVendas INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE 
+        @ClienteId      INT,
+        @TotalVenda     DECIMAL(10,2),
+        @VendaId        INT,
+        @ProdutoId      INT,
+        @Estoque        INT,
+        @ServicoId      INT,
+        @Quantidade     INT,
+        @PrecoUnitario  DECIMAL(10,2),
+        @Itens          TypeTable_VendaItens,
+        @QtdItens       INT,
+        @i              INT = 0,
+        @j              INT;
+
+    BEGIN TRY
+        WHILE @i < @QtdVendas
+        BEGIN
+            BEGIN TRANSACTION;
+            -- Gera a quantidade de itens da venda
+            SET @QtdItens = ROUND(RAND() * 5 + 1,0);
+            SET @j = 0;
+
+            WHILE @j < @QtdItens
+            BEGIN
+                -- Escolhe um produto ou serviço para adicionar a venda
+                IF(ROUND(RAND(), 0) = 1)
+                BEGIN
+                    -- Seleciona um produto aleatório
+                    SELECT TOP 1 
+                        @ProdutoId = P.Id, 
+                        @Estoque = P.Estoque, 
+                        @PrecoUnitario = P.PrecoVenda
+                    FROM dbo.PRODUTOS P 
+                    WHERE P.Estoque > 0
+                    ORDER BY NEWID();
+
+                    -- Ajusta valores
+                    SET @Quantidade = ROUND(RAND() * @Estoque + 1, 0);
+                    SET @Quantidade = IIF(@Quantidade > @Estoque,@Estoque,@Quantidade);
+                    SET @ServicoId = NULL;
+
+                END
+                ELSE
+                BEGIN
+                    -- Seleciona um serviço aleatório
+                    SELECT TOP 1 
+                        @ServicoId = S.Id,
+                        @PrecoUnitario = S.Preco
+                    FROM dbo.SERVICOS S
+                    ORDER BY NEWID();
+
+                    -- Ajusta valores
+                    SET @Quantidade = 1;
+                    SET @ProdutoId = NULL;
+
+                END
+        
+                -- Insere itens na tabela temporaria
+                INSERT INTO @Itens VALUES (@ProdutoId,@ServicoId,@Quantidade,@PrecoUnitario);
+
+                SET @j +=1;
+            END
+
+            -- Seleciona um cliente aleatório para venda
+            SELECT TOP 1 @ClienteId = C.Id FROM dbo.CLIENTES C ORDER BY NEWID();
+
+            -- Calcula o total da venda com base nos itens
+            SELECT @TotalVenda = SUM(Quantidade * PrecoUnitario)
+            FROM @Itens;
+
+            -- Insere a venda principal
+            INSERT INTO dbo.VENDAS (ClienteId, Total)
+            VALUES (@ClienteId, ISNULL(@TotalVenda, 0));
+
+            SET @VendaId = SCOPE_IDENTITY();
+
+            -- Insere os itens da venda
+            INSERT INTO dbo.VendaItens (VendaId, ProdutoId, ServicoId, Quantidade, PrecoUnitario)
+            SELECT 
+                @VendaId,
+                ProdutoId,
+                ServicoId,
+                Quantidade,
+                PrecoUnitario
+            FROM @Itens;
+
+            COMMIT TRANSACTION;
+            PRINT 'Venda registrada com sucesso! VendaId = ' + CAST(@VendaId AS NVARCHAR(10));
+
+            DELETE FROM @Itens;
+            SET @i += 1;
+        END
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+
+        DECLARE @Erro NVARCHAR(4000) = ERROR_MESSAGE();
+        RAISERROR('Erro ao registrar venda: %s', 16, 1, @Erro);
+    END CATCH
+END;
+GO
+
+
+INSERT INTO PERFIS (Nome, Descricao) 
+    VALUES ('Administrador','Usuário master'),
+           ('Gerente','Responsável por setores da empresa');
+
+INSERT INTO USUARIOS (Nome, Email, SenhaHash, PerfilId) 
+    VALUES ('Administrador','admin@empresa.com',CONVERT(VARBINARY(MAX), 'Master123'),1),
+           ('Astolfo','astolfo@empresa.com',CONVERT(VARBINARY(MAX), 'Astolfo123'),2),
+           ('Maria','maria@empresa.com',CONVERT(VARBINARY(MAX), 'Maria123'),2);
+
+EXEC dbo.usp_PopulaClientes 50
+EXEC dbo.usp_PopularFornecedores 10
 EXEC dbo.usp_PopulaProdutos 10
+EXEC dbo.usp_PopulaServicos 8
+EXEC dbo.usp_GeraDadosEntradaItens 8
+EXEC dbo.usp_PopulaVendas 20
+
+--UPDATE P SET P.Ativo = 0 FROM PRODUTOS P WHERE P.Id = 10;
+--UPDATE P SET P.Ativo = 1 FROM PRODUTOS P WHERE P.Id = 10;
+--UPDATE P SET P.PrecoVenda = 32.50*1.75 FROM PRODUTOS P WHERE P.Id = 10;
+--UPDATE P SET P.PrecoCompra = 32.50/1.30 FROM PRODUTOS P WHERE P.Id = 10;
+--UPDATE P SET P.Custo = 32.50 FROM PRODUTOS P WHERE P.Id = 10;
+--UPDATE P SET P.Estoque = 15 FROM PRODUTOS P WHERE P.Id = 10;
+
+--SELECT * FROM PRODUTOS 
+--SELECT * FROM EntradaItens 
+--SELECT * FROM ENTRADAS
+--SELECT * FROM MOVIMENTACOESESTOQUE
+--SELECT * FROM FORNECEDORES
+--SELECT * FROM CLIENTES
+--SELECT * FROM SERVICOS
+
+-- VENDAS
+SELECT * FROM PRODUTOS
+SELECT * FROM SERVICOS
+SELECT * FROM VENDAS
+SELECT * FROM VENDAITENS 
+SELECT * FROM MOVIMENTACOESESTOQUE 
+
+SELECT * FROM MOVIMENTACOESESTOQUE WHERE OBSERVACAO LIKE'%VENDA%' ORDER BY CODIGOPRODUTO
 
 
-SELECT * FROM PRODUTOS ORDER BY Codigo
-SELECT * FROM EntradaItens ORDER BY CodigoProduto
-SELECT * FROM ENTRADAS
-SELECT * FROM MOVIMENTACOESESTOQUE
-SELECT * FROM FORNECEDORES
-SELECT * FROM CLIENTES
-
-DELETE FROM EntradaItens
-DELETE FROM MOVIMENTACOESESTOQUE
-DELETE FROM PRODUTOS
-DELETE FROM ENTRADAS
-DELETE FROM FORNECEDORES
-
-UPDATE I SET I.Quantidade = 2 FROM EntradaItens I WHERE ID = 796
-DELETE FROM EntradaItens WHERE ID = 783;
-
-DECLARE @NovoCNPJ CHAR(14);
-EXEC dbo.usp_GerarCNPJ @CNPJ = @NovoCNPJ OUTPUT;
-SELECT @NovoCNPJ AS CNPJGerado;
+SELECT * FROM PRODUTOS WHERE CODIGO = 'CP987'
+SELECT * FROM MOVIMENTACOESESTOQUE WHERE CODIGOPRODUTO = 'CP987'
+SELECT * FROM SERVICOS
+SELECT * FROM VENDAS
+SELECT * FROM VENDAITENS WHERE PRODUTOID = 19
 
 
-SELECT * FROM sys.objects WHERE type = 'P';
+--UPDATE P SET P.Estoque = 6 FROM PRODUTOS P WHERE P.Id = 19;
+--UPDATE V SET V.Quantidade = 3 FROM VENDAITENS V WHERE V.Id = 10;
+
+
+--SELECT * FROM PRODUTOS P WHERE P.Id = 10;
+--SELECT * FROM MOVIMENTACOESESTOQUE M INNER JOIN PRODUTOS P ON M.CodigoProduto = P.Codigo 
+--WHERE P.Id = 25
+
+--DELETE FROM EntradaItens
+--DELETE FROM MOVIMENTACOESESTOQUE
+--DELETE FROM PRODUTOS
+--DELETE FROM ENTRADAS
+--DELETE FROM FORNECEDORES
+
+--UPDATE I SET I.Quantidade = 2 FROM EntradaItens I WHERE ID = 796
+--DELETE FROM EntradaItens WHERE ID = 783;
+
+--DECLARE @NovoCNPJ CHAR(14);
+--EXEC dbo.usp_GerarCNPJ @CNPJ = @NovoCNPJ OUTPUT;
+--SELECT @NovoCNPJ AS CNPJGerado;
+
+
+--SELECT * FROM sys.objects WHERE type = 'P';

@@ -317,17 +317,49 @@ GO
 --GO
 
 
-EXEC dbo.usp_GeraDadosEntradaItens 10
+EXEC dbo.usp_GeraDadosEntradaItens 1
+EXEC dbo.usp_PopulaProdutos 2
 
-
+SELECT * FROM USUARIOS
 SELECT * FROM ENTRADAS
-SELECT * FROM EntradaItens WHERE CodigoProduto = 'DE552' ORDER BY CodigoProduto
-SELECT * FROM PRODUTOS WHERE Codigo = 'DE552' ORDER BY Codigo
-SELECT * FROM MOVIMENTACOESESTOQUE WHERE CodigoProduto = 'DE552' ORDER BY CodigoProduto
+SELECT * FROM EntradaItens --WHERE CodigoProduto = 'DE552' ORDER BY CodigoProduto
+SELECT * FROM PRODUTOS WHERE Codigo = 'JF386' ORDER BY Codigo
+SELECT * FROM MOVIMENTACOESESTOQUE WHERE CodigoProduto = 'JF386' ORDER BY CodigoProduto
 SELECT * FROM FORNECEDORES
 
+DELETE FROM PRODUTOS
 DELETE FROM EntradaItens
 DELETE FROM MOVIMENTACOESESTOQUE
-DELETE FROM PRODUTOS
 DELETE FROM ENTRADAS
 DELETE FROM FORNECEDORES
+
+UPDATE P SET P.Ativo = 0 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+UPDATE P SET P.Ativo = 1 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+UPDATE P SET P.PrecoVenda = 32.50*1.75 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+UPDATE P SET P.PrecoCompra = 32.50/1.30 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+UPDATE P SET P.Custo = 32.50 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+UPDATE P SET P.Estoque = 15 FROM PRODUTOS P WHERE P.Codigo = 'JF386';
+
+INSERT INTO PERFIS (Nome, Descricao) 
+    VALUES ('Administrador','Usuário master'),
+           ('Gerente','Responsável por setores da empresa');
+
+INSERT INTO USUARIOS (Nome, Email, SenhaHash, PerfilId) 
+    VALUES ('Administrador','admin@empresa.com',CONVERT(VARBINARY(MAX), 'Master123'),1),
+           ('Astolfo','astolfo@empresa.com',CONVERT(VARBINARY(MAX), 'Astolfo123'),2),
+           ('Maria','maria@empresa.com',CONVERT(VARBINARY(MAX), 'Maria123'),2);
+
+SELECT * FROM PERFIS;
+SELECT * FROM USUARIOS;
+SELECT CONVERT(VARCHAR(MAX),SenhaHash) FROM USUARIOS
+
+USE master;
+
+
+
+IF(ROUND(RAND(), 0) = 1)
+PRINT 'TRUE'
+ELSE
+PRINT'FALSE'
+
+SELECT CAST(ROUND(RAND(), 0) AS BIT) AS RandomBoolean;
