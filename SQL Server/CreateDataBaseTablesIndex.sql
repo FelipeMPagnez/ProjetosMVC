@@ -190,8 +190,11 @@ CREATE TABLE SERVICOS (
 );
 GO
 
+-- DROP TABLE VENDAITENS
+-- DROP TABLE VENDAS
 CREATE TABLE VENDAS (
     Id          INT IDENTITY(1,1) PRIMARY KEY,
+    NumeroVenda INT UNIQUE NOT NULL,
     ClienteId   INT NULL,
     DataVenda   DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     Total       DECIMAL(10,2) NOT NULL CHECK (Total >= 0),
@@ -213,24 +216,26 @@ CREATE TABLE VendaItens (
 );
 GO
 
-CREATE TABLE FORMASPAGAMENTO (
-    Id      INT IDENTITY(1,1) PRIMARY KEY,
-    Nome    NVARCHAR(50) NOT NULL UNIQUE,
-    Tipo    NVARCHAR(20) NOT NULL,
-    Ativo   BIT NOT NULL DEFAULT 1
-);
-GO
+-- DROP TABLE MOVIMENTACOESFINANCEIRAS
+-- DROP TABLE FORMASPAGAMENTO
+--CREATE TABLE FORMASPAGAMENTO (
+--    Id      INT IDENTITY(1,1) PRIMARY KEY,
+--    Nome    NVARCHAR(50) NOT NULL UNIQUE,
+--    Tipo    NVARCHAR(20) NOT NULL,
+--    Ativo   BIT NOT NULL DEFAULT 1
+--);
+--GO
 
-CREATE TABLE MOVIMENTACOESFINANCEIRAS (
-    Id                  INT IDENTITY(1,1) PRIMARY KEY,
-    VendaId             INT NULL FOREIGN KEY REFERENCES Vendas(Id),
-    TipoMovimentacacao  NVARCHAR(10) NOT NULL CHECK (TipoMovimentacacao IN ('Entrada', 'Saida')),
-    Valor               DECIMAL(10,2) NOT NULL CHECK (Valor >= 0),
-    FormaPagamentoId    INT NULL FOREIGN KEY REFERENCES FormasPagamento(Id),
-    DataMovimento       DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
-    Observacao          NVARCHAR(500)
-);
-GO
+--CREATE TABLE MOVIMENTACOESFINANCEIRAS (
+--    Id                  INT IDENTITY(1,1) PRIMARY KEY,
+--    VendaId             INT NULL FOREIGN KEY REFERENCES Vendas(Id),
+--    TipoMovimentacacao  NVARCHAR(10) NOT NULL CHECK (TipoMovimentacacao IN ('Entrada', 'Saida')),
+--    Valor               DECIMAL(10,2) NOT NULL CHECK (Valor >= 0),
+--    FormaPagamentoId    INT NULL FOREIGN KEY REFERENCES FormasPagamento(Id),
+--    DataMovimento       DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
+--    Observacao          NVARCHAR(500)
+--);
+--GO
 
 -- Cria indices para tabelas
 CREATE INDEX IX_Produtos_Nome ON Produtos(Nome);

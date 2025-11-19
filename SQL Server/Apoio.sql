@@ -667,6 +667,7 @@ BEGIN
         @ClienteId      INT,
         @TotalVenda     DECIMAL(10,2),
         @VendaId        INT,
+        @NumeroVenda    INT = 1,
         @ProdutoId      INT,
         @Estoque        INT,
         @ServicoId      INT,
@@ -733,9 +734,14 @@ BEGIN
             SELECT @TotalVenda = SUM(Quantidade * PrecoUnitario)
             FROM @Itens;
 
+            -- Verfica o numero do ultima venda
+            SELECT TOP 1 @NumeroVenda = NumeroVenda + 1
+            FROM dbo.VENDAS 
+            ORDER BY NumeroVenda DESC;
+
             -- Insere a venda principal
-            INSERT INTO dbo.VENDAS (ClienteId, Total)
-            VALUES (@ClienteId, ISNULL(@TotalVenda, 0));
+            INSERT INTO dbo.VENDAS (NumeroVenda, ClienteId, Total)
+            VALUES (@NumeroVenda, @ClienteId, ISNULL(@TotalVenda, 0));
 
             SET @VendaId = SCOPE_IDENTITY();
 
@@ -782,12 +788,12 @@ EXEC dbo.usp_PopulaServicos 8
 EXEC dbo.usp_GeraDadosEntradaItens 8
 EXEC dbo.usp_PopulaVendas 20
 
---UPDATE P SET P.Ativo = 0 FROM PRODUTOS P WHERE P.Id = 10;
---UPDATE P SET P.Ativo = 1 FROM PRODUTOS P WHERE P.Id = 10;
---UPDATE P SET P.PrecoVenda = 32.50*1.75 FROM PRODUTOS P WHERE P.Id = 10;
---UPDATE P SET P.PrecoCompra = 32.50/1.30 FROM PRODUTOS P WHERE P.Id = 10;
---UPDATE P SET P.Custo = 32.50 FROM PRODUTOS P WHERE P.Id = 10;
---UPDATE P SET P.Estoque = 15 FROM PRODUTOS P WHERE P.Id = 10;
+UPDATE P SET P.Ativo = 0 FROM PRODUTOS P WHERE P.Id = 25;
+UPDATE P SET P.Ativo = 1 FROM PRODUTOS P WHERE P.Id = 25;
+UPDATE P SET P.PrecoVenda = 32.50*1.75 FROM PRODUTOS P WHERE P.Id = 25;
+UPDATE P SET P.PrecoCompra = 32.50/1.30 FROM PRODUTOS P WHERE P.Id = 25;
+UPDATE P SET P.Custo = 32.50 FROM PRODUTOS P WHERE P.Id = 25;
+UPDATE P SET P.Estoque = 15 FROM PRODUTOS P WHERE P.Id = 25;
 
 --SELECT * FROM PRODUTOS 
 --SELECT * FROM EntradaItens 

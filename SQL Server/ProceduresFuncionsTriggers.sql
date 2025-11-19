@@ -144,12 +144,12 @@ BEGIN
             I.Custo,
             NULL,
             CASE
-                WHEN i.Ativo = 0 AND I.Ativo <> D.Ativo THEN 'Atualização manual do produto, produto inativado'
-                WHEN i.Ativo = 1 AND I.Ativo <> D.Ativo THEN 'Atualização manual do produto, produto ativado'
-                WHEN ISNULL(I.Estoque,0) <> ISNULL(D.Estoque,0) THEN 'Atualização manual do produto, ajuste de estoque'
-                WHEN ISNULL(I.PrecoVenda,0) <> ISNULL(D.PrecoVenda,0) THEN 'Atualização manual do produto, correção no preço de venda'
-                WHEN ISNULL(I.PrecoCompra,0) <> ISNULL(D.PrecoCompra,0) THEN 'Atualização manual do produto, correção no preço de compra'
-                WHEN ISNULL(I.Custo,0) <> ISNULL(D.Custo,0) THEN 'Atualização manual do produto, correção no valor do custo'
+                WHEN i.Ativo = 0 AND I.Ativo <> D.Ativo THEN 'Ajuste manual do produto, produto inativado'
+                WHEN i.Ativo = 1 AND I.Ativo <> D.Ativo THEN 'Ajuste manual do produto, produto ativado'
+                WHEN ISNULL(I.Estoque,0) <> ISNULL(D.Estoque,0) THEN 'Ajuste manual do produto, ajuste de estoque'
+                WHEN ISNULL(I.PrecoVenda,0) <> ISNULL(D.PrecoVenda,0) THEN 'Ajuste manual do produto, correção no preço de venda'
+                WHEN ISNULL(I.PrecoCompra,0) <> ISNULL(D.PrecoCompra,0) THEN 'Ajuste manual do produto, correção no preço de compra'
+                WHEN ISNULL(I.Custo,0) <> ISNULL(D.Custo,0) THEN 'Ajuste manual do produto, correção no valor do custo'
             END AS Observacao,
             1
         FROM Deleted D

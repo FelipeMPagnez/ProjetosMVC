@@ -363,3 +363,68 @@ ELSE
 PRINT'FALSE'
 
 SELECT CAST(ROUND(RAND(), 0) AS BIT) AS RandomBoolean;
+
+
+WITH MovimentacoesOrdenadas AS (
+        SELECT 
+            ME.Id,
+            ME.TipoMovimentacao,
+            ME.CodigoProduto,
+            ME.NomeProduto,
+            ME.Quantidade,
+            ME.PrecoVenda,
+            ME.ValorVendido,
+            ME.Custo,
+            ME.DocumentoId,
+            ME.Observacao,
+            U.Nome AS UsuarioNome,
+            ME.DataMovimentacao,
+            ImpactoEstoque = CASE 
+                WHEN ME.TipoMovimentacao = 'E' THEN ME.Quantidade
+                WHEN ME.TipoMovimentacao = 'S' THEN -ME.Quantidade
+                WHEN ME.TipoMovimentacao = 'A' THEN ME.Quantidade
+                ELSE 0
+            END,
+            ROW_NUMBER() OVER (PARTITION BY ME.CodigoProduto ORDER BY ME.DataMovimentacao, ME.Id) AS OrdemProduto
+        FROM dbo.MOVIMENTACOESESTOQUE ME 
+        INNER JOIN dbo.VENDAS V ON ME.DocumentoId = V.Id
+        LEFT JOIN dbo.USUARIOS U ON ME.UsuarioMovimentacao = U.Id
+        WHERE V.NumeroVenda = 154 and ME.Observacao LIKE '%venda%'
+    )
+    SELECT 
+        M.Id,
+        M.TipoMovimentacao,
+        CASE 
+            WHEN M.TipoMovimentacao = 'E' THEN 'Entrada'
+            WHEN M.TipoMovimentacao = 'S' THEN 'Saída'
+            WHEN M.TipoMovimentacao = 'A' THEN 'Ajuste'
+            ELSE 'Desconhecido'
+        END AS DescricaoMovimentacao,
+        M.CodigoProduto,
+        M.NomeProduto,
+        M.Quantidade,
+        SaldoAcumulado = SUM(M.ImpactoEstoque) OVER (
+            PARTITION BY M.CodigoProduto 
+            ORDER BY M.DataMovimentacao, M.Id 
+            ROWS UNBOUNDED PRECEDING
+        ),
+        M.PrecoVenda,
+        M.ValorVendido,
+        M.Custo,
+        M.DocumentoId,
+        M.Observacao,
+        M.UsuarioNome,
+        M.DataMovimentacao
+    FROM MovimentacoesOrdenadas M
+    ORDER BY M.CodigoProduto, M.DataMovimentacao, M.Id
+
+
+UPDATE VENDAS
+SET NUMEROVENDA = 154
+WHERE ID = 4
+
+UPDATE MOVIMENTACOESESTOQUE
+SET OBSERVACAO = 'Inclusão do produto na venda nº 154'
+WHERE ID = 48
+
+SELECT * FROM VENDAS
