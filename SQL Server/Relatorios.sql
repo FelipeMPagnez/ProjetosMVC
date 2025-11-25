@@ -108,20 +108,25 @@ BEGIN
         @NumeroNFe NVARCHAR(9),
         @CodigoProduto NVARCHAR(5)';
 
-    EXEC sp_executesql @SQLQuery, @ParamDefinitions, @Data,@FornecedorId,@DataInicio,@DataFim,@NumeroNFe,@CodigoProduto;
+    EXEC sp_executesql 
+        @SQLQuery, 
+        @ParamDefinitions, 
+        @Data,
+        @FornecedorId,
+        @DataInicio,
+        @DataFim,
+        @NumeroNFe,
+        @CodigoProduto;
 END;
 GO
 
-EXEC usp_RelatorioCompras @Data = '2025-11-18';
-
+-- Compras
+EXEC usp_RelatorioCompras;
+EXEC usp_RelatorioCompras @Data = '2025-11-25';
 EXEC usp_RelatorioCompras @FornecedorId = 15;
-
 EXEC usp_RelatorioCompras @FornecedorId = 17, @DataInicio = '2025-10-01';
-
-EXEC usp_RelatorioCompras @NumeroNFe = '052435997';
-
-EXEC usp_RelatorioCompras @CodigoProduto = 'RT342';
-
+EXEC usp_RelatorioCompras @NumeroNFe = '263374278';
+EXEC usp_RelatorioCompras @CodigoProduto = 'LR657';
 EXEC usp_RelatorioCompras @DataInicio = '2025-10-01', @DataFim = '2025-12-31'
 GO
 
@@ -253,7 +258,7 @@ BEGIN
         M.CodigoProduto,
         M.NomeProduto,
         M.Quantidade,
-        SaldoAcumulado = SUM(M.ImpactoEstoque) OVER (
+        SaldoPeriodo = SUM(M.ImpactoEstoque) OVER (
             PARTITION BY M.CodigoProduto 
             ORDER BY M.DataMovimentacao, M.Id 
             ROWS UNBOUNDED PRECEDING
@@ -264,7 +269,7 @@ BEGIN
         M.DocumentoId,
         M.Observacao,
         M.UsuarioNome,
-        M.DataMovimentacao
+        CAST(M.DataMovimentacao AS DATE) AS DataMovimentacao
     FROM MovimentacoesOrdenadas M
     ORDER BY M.CodigoProduto, M.DataMovimentacao, M.Id;';
 
@@ -278,9 +283,9 @@ BEGIN
         @DataInicio         DATE,
         @DataFim            DATE,
         @TipoMovimentacao   CHAR(1)';
-
-    -- Executar a query dinâmica
-    PRINT @SQLQuery; -- Para debug
+        
+    -- Executar a query dinâmica para debug
+    -- PRINT @SQLQuery; 
 
     EXEC sp_executesql 
         @SQLQuery,
@@ -306,6 +311,13 @@ CREATE OR ALTER PROCEDURE usp_ResumoMovimentacoesEstoque
 AS
 BEGIN
     SET NOCOUNT ON;
+
+    -- Validações básicas
+    IF @CodigoProduto IS NULL 
+        AND @NomeProduto IS NULL 
+        AND @DataInicio IS NULL
+        AND @TipoMovimentacao IS NULL
+        THROW 50001, 'Pelo menos um parâmetro de filtro deve ser informado.', 1;
 
     DECLARE
         @SQLQuery          NVARCHAR(MAX),
@@ -363,7 +375,7 @@ BEGIN
 
     -- Adicionar WHERE clause se houver filtros
     IF @Contador > 0
-        SET @SQLQuery = @SQLQuery + ' WHERE ' + @WhereClause;
+        SET @SQLQuery += ' WHERE ' + @WhereClause;
 
     SET @ParamDefinitions = N'
         @CodigoProduto NVARCHAR(5),
@@ -384,30 +396,346 @@ BEGIN
 END;
 GO
 
--- 1. Movimentações por código do produto
-EXEC usp_RelatorioMovimentacoesEstoque @CodigoProduto = 'RT924';
-
--- 2. Movimentações por nome do produto (busca parcial)
+-- Movimentações
+EXEC usp_RelatorioMovimentacoesEstoque;
+EXEC usp_RelatorioMovimentacoesEstoque @CodigoProduto = 'CP163';
 EXEC usp_RelatorioMovimentacoesEstoque @NomeProduto = 'RT';
-
--- 3. Movimentações por documento
 EXEC usp_RelatorioMovimentacoesEstoque @DocumentoId = 4;
-EXEC usp_RelatorioMovimentacoesEstoque @NumeroVenda = 154;
-EXEC usp_RelatorioMovimentacoesEstoque @NumeroNFe = '56745800';
-
--- 4. Movimentações por período
+EXEC usp_RelatorioMovimentacoesEstoque @NumeroVenda = 20;
+EXEC usp_RelatorioMovimentacoesEstoque @NumeroNFe = '916254593';
 EXEC usp_RelatorioMovimentacoesEstoque @DataInicio = '2025-10-01', @DataFim = '2025-11-30';
-
--- 5. Apenas entradas no estoque
 EXEC usp_RelatorioMovimentacoesEstoque @TipoMovimentacao = 'E';
 EXEC usp_RelatorioMovimentacoesEstoque @TipoMovimentacao = 'S';
 EXEC usp_RelatorioMovimentacoesEstoque @TipoMovimentacao = 'A';
+EXEC usp_RelatorioMovimentacoesEstoque @CodigoProduto = 'CP163', @DataInicio = '2025-11-20', @TipoMovimentacao = 'E';
 
--- 6. Combinação de filtros
-EXEC usp_RelatorioMovimentacoesEstoque @CodigoProduto = 'RT924', @DataInicio = '2024-01-01', @TipoMovimentacao = 'S';
-
--- 7. Resumo das movimentações
+-- Resumo das movimentações
+EXEC usp_ResumoMovimentacoesEstoque;
+EXEC usp_ResumoMovimentacoesEstoque @CodigoProduto = 'CP163';
+EXEC usp_ResumoMovimentacoesEstoque @NomeProduto = 'Produto-CP163';
 EXEC usp_ResumoMovimentacoesEstoque @DataInicio = '2024-01-01',  @DataFim = '2025-11-30';
+EXEC usp_ResumoMovimentacoesEstoque @TipoMovimentacao = 'E';
+EXEC usp_ResumoMovimentacoesEstoque @TipoMovimentacao = 'S';
+EXEC usp_ResumoMovimentacoesEstoque @TipoMovimentacao = 'A';
 GO
 
 -- Relatorio de vendas
+CREATE OR ALTER PROCEDURE usp_BuscarVendas
+    @CodigoProduto  VARCHAR(5) = NULL,
+    @NomeProduto    NVARCHAR(80) = NULL,
+    @CodigoServico  VARCHAR(6) = NULL,
+    @NomeServico    NVARCHAR(80) = NULL,
+    @NumeroVenda    INT = NULL,
+    @Cliente        NVARCHAR(100) = NULL,
+    @DataInicio     DATETIME2 = NULL,
+    @DataFim        DATETIME2 = '2099-12-31'
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Validações básicas
+    IF @CodigoProduto IS NULL 
+        AND @NomeProduto IS NULL 
+        AND @CodigoServico IS NULL 
+        AND @NomeServico IS NULL 
+        AND @NumeroVenda IS NULL 
+        AND @Cliente IS NULL 
+        AND @DataInicio IS NULL
+        THROW 50001, 'Pelo menos um parâmetro de filtro deve ser informado.', 1;
+
+    DECLARE
+        @SQLQuery          NVARCHAR(MAX),
+        @WhereClause       NVARCHAR(MAX) = '',
+        @ParamDefinitions  NVARCHAR(1000),
+        @Contador          INT = 0;
+
+    -- Construção dinâmica do WHERE
+    IF @CodigoProduto IS NOT NULL
+    BEGIN
+        SET @WhereClause += '(P.Codigo = @CodigoProduto)';
+        SET @Contador += 1;
+    END;
+
+    IF @NomeProduto IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(P.Nome LIKE ''%'' + @NomeProduto + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @CodigoServico IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(S.Codigo = @CodigoServico)';
+        SET @Contador += 1;
+    END;
+
+    IF @NomeServico IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(S.Nome LIKE ''%'' + @NomeServico + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @NumeroVenda IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(V.NumeroVenda = @NumeroVenda)';
+        SET @Contador += 1;
+    END;
+
+    IF @Cliente IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(C.Nome LIKE ''%'' + @Cliente + ''%'' OR C.CPF LIKE ''%'' + @Cliente + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @DataInicio IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(CAST(V.DataVenda AS DATE) BETWEEN @DataInicio AND @DataFim)';
+        SET @Contador += 1;
+    END;
+
+    -- Query principal
+    SET @SQLQuery = 
+    'SELECT 
+        V.Id AS VendaId,
+        V.NumeroVenda,
+        CAST(V.DataVenda AS DATE) AS DataVenda,
+        V.Total AS TotalVenda,
+        V.Estatus,
+        C.Id AS ClienteId,
+        C.Nome AS ClienteNome,
+        C.CPF AS ClienteCPF,
+        VI.Id AS ItemId,
+        VI.ProdutoId,
+        P.Codigo AS ProdutoCodigo,
+        P.Nome AS ProdutoNome,
+        VI.ServicoId,
+        S.Codigo AS ServicoCodigo,
+        S.Nome AS ServicoNome,
+        VI.Quantidade,
+        VI.PrecoUnitario,
+        VI.Total AS TotalItem
+    FROM VENDAS V
+    INNER JOIN CLIENTES C ON V.ClienteId = C.Id
+    INNER JOIN VendaItens VI ON V.Id = VI.VendaId
+    LEFT JOIN PRODUTOS P ON VI.ProdutoId = P.Id
+    LEFT JOIN SERVICOS S ON VI.ServicoId = S.Id';
+
+    -- Adicionar WHERE clause se houver filtros
+    IF @Contador > 0
+        SET @SQLQuery += ' WHERE ' + @WhereClause;
+
+    -- Ordenação padrão
+    SET @SQLQuery += ' ORDER BY V.DataVenda DESC, V.NumeroVenda DESC';
+        
+    -- Executar a query dinâmica para debug
+    -- PRINT @SQLQuery; 
+
+    SET @ParamDefinitions = N'
+        @CodigoProduto VARCHAR(5),
+        @NomeProduto NVARCHAR(80),
+        @CodigoServico VARCHAR(6),
+        @NomeServico NVARCHAR(80),
+        @NumeroVenda INT,
+        @Cliente NVARCHAR(100),
+        @DataInicio DATETIME2,
+        @DataFim DATETIME2';
+
+    EXEC sp_executesql 
+        @SQLQuery,
+        @ParamDefinitions,
+        @CodigoProduto,
+        @NomeProduto,
+        @CodigoServico,
+        @NomeServico,
+        @NumeroVenda,
+        @Cliente,
+        @DataInicio,
+        @DataFim;
+
+END;
+GO
+
+CREATE OR ALTER PROCEDURE usp_ResumoVendas
+    @CodigoProduto      VARCHAR(5) = NULL,
+    @NomeProduto        NVARCHAR(80) = NULL,
+    @CodigoServico      VARCHAR(6) = NULL,
+    @NomeServico        NVARCHAR(80) = NULL,
+    @Cliente            NVARCHAR(100) = NULL,
+    @DataInicio         DATETIME2 = NULL,
+    @DataFim           DATETIME2 = '2099-12-31'
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Validações básicas
+    IF @CodigoProduto IS NULL 
+        AND @NomeProduto IS NULL 
+        AND @CodigoServico IS NULL 
+        AND @NomeServico IS NULL 
+        AND @Cliente IS NULL 
+        AND @DataInicio IS NULL
+        THROW 50001, 'Pelo menos um parâmetro de filtro deve ser informado.', 1;
+
+    DECLARE
+        @SQLQuery          NVARCHAR(MAX),
+        @WhereClause       NVARCHAR(MAX) = '',
+        @ParamDefinitions  NVARCHAR(1000),
+        @Contador          INT = 0;
+
+
+    -- Construção dinâmica do WHERE
+    IF @CodigoProduto IS NOT NULL
+    BEGIN
+        SET @WhereClause += '(P.Codigo = @CodigoProduto)';
+        SET @Contador += 1;
+    END;
+
+    IF @NomeProduto IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(P.Nome LIKE ''%'' + @NomeProduto + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @CodigoServico IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(S.Codigo = @CodigoServico)';
+        SET @Contador += 1;
+    END;
+
+    IF @NomeServico IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(S.Nome LIKE ''%'' + @NomeServico + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @Cliente IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(C.Nome LIKE ''%'' + @Cliente + ''%'' OR C.CPF LIKE ''%'' + @Cliente + ''%'')';
+        SET @Contador += 1;
+    END;
+
+    IF @DataInicio IS NOT NULL
+    BEGIN
+        IF @Contador > 0
+            SET @WhereClause += ' AND ';
+        SET @WhereClause += '(CAST(V.DataVenda AS DATE) BETWEEN @DataInicio AND @DataFim)';
+        SET @Contador += 1;
+    END;
+
+
+    -- Query de resumo
+    SET @SQLQuery = 
+    'IF EXISTS (
+        SELECT 1
+        FROM VENDAS V
+        INNER JOIN CLIENTES C ON V.ClienteId = C.Id
+        INNER JOIN VendaItens VI ON V.Id = VI.VendaId
+        LEFT JOIN PRODUTOS P ON VI.ProdutoId = P.Id
+        LEFT JOIN SERVICOS S ON VI.ServicoId = S.Id';
+
+    -- Adicionar WHERE clause se houver filtros
+    IF @Contador > 0
+        SET @SQLQuery += ' WHERE ' + @WhereClause;
+
+    SET @SQLQuery += ')
+    SELECT 
+        -- Métricas principais
+        TotalVendas = COUNT(V.Id),
+        TotalItensVendidos = SUM(VI.Quantidade),
+        ValorTotalVendas = SUM(VI.Total),
+        TicketMedio = CAST(AVG(VI.Total) AS DECIMAL(10,2)),
+        
+        -- Métricas por tipo de item
+        TotalProdutosVendidos = SUM(CASE WHEN VI.ProdutoId IS NOT NULL THEN VI.Quantidade ELSE 0 END),
+        TotalServicosVendidos = SUM(CASE WHEN VI.ServicoId IS NOT NULL THEN VI.Quantidade ELSE 0 END),
+        ValorTotalProdutos = SUM(CASE WHEN VI.ProdutoId IS NOT NULL THEN VI.Total ELSE 0 END),
+        ValorTotalServicos = SUM(CASE WHEN VI.ServicoId IS NOT NULL THEN VI.Total ELSE 0 END),
+        
+        -- Métricas por status
+        VendasAbertas = SUM(CASE WHEN V.Estatus = ''Aberta'' THEN 1 ELSE 0 END),
+        VendasFechadas = SUM(CASE WHEN V.Estatus = ''Fechada'' THEN 1 ELSE 0 END),
+        VendasCanceladas = SUM(CASE WHEN V.Estatus = ''Cancelada'' THEN 1 ELSE 0 END),
+        
+        -- Métricas temporais
+        MaiorVenda = MAX(VI.Total),
+        MenorVenda = MIN(VI.Total),
+        MediaItensPorVenda = CAST(AVG(VI.Quantidade * 1.0) AS DECIMAL(10,2)),
+        
+        -- Métricas de clientes
+        TotalClientesAtendidos = COUNT(V.ClienteId),
+        ClientesNovos = COUNT(CASE WHEN C.DataCadastro >= @DataInicio THEN C.Id END)
+        
+    FROM VENDAS V
+    INNER JOIN CLIENTES C ON V.ClienteId = C.Id
+    INNER JOIN VendaItens VI ON V.Id = VI.VendaId
+    LEFT JOIN PRODUTOS P ON VI.ProdutoId = P.Id
+    LEFT JOIN SERVICOS S ON VI.ServicoId = S.Id';
+
+    -- Adicionar WHERE clause se houver filtros
+    IF @Contador > 0
+        SET @SQLQuery += ' WHERE ' + @WhereClause;
+        
+    -- Executar a query dinâmica para debug
+    -- PRINT @SQLQuery; 
+
+    SET @ParamDefinitions = N'
+        @CodigoProduto VARCHAR(5),
+        @NomeProduto NVARCHAR(80),
+        @CodigoServico VARCHAR(6),
+        @NomeServico NVARCHAR(80),
+        @Cliente NVARCHAR(100),
+        @DataInicio DATETIME2,
+        @DataFim DATETIME2';
+
+    EXEC sp_executesql 
+        @SQLQuery,
+        @ParamDefinitions,
+        @CodigoProduto,
+        @NomeProduto,
+        @CodigoServico,
+        @NomeServico,
+        @Cliente,
+        @DataInicio,
+        @DataFim;
+
+END;
+GO
+
+-- Vendas
+EXEC usp_BuscarVendas;
+EXEC usp_BuscarVendas @CodigoProduto = 'KP924';
+EXEC usp_BuscarVendas @NomeProduto = 'Produto-JF684';
+EXEC usp_BuscarVendas @CodigoServico = 'SEV657';
+EXEC usp_BuscarVendas @NomeServico = 'Serviço-SEV657';
+EXEC usp_BuscarVendas @NumeroVenda = 5;
+EXEC usp_BuscarVendas @Cliente = 'Xavier Martins'; 
+EXEC usp_BuscarVendas @Cliente = 'Rafael Esteves';
+EXEC usp_BuscarVendas @DataInicio = '2025-11-01', @DataFim = '2025-11-30';
+EXEC usp_BuscarVendas @NomeProduto = 'KP924', @DataInicio = '2025-11-01';
+
+-- Resumo
+EXEC usp_ResumoVendas;
+EXEC usp_ResumoVendas @DataInicio = '2025-11-01', @DataFim = '2025-11-30';
+EXEC usp_ResumoVendas @NomeProduto = 'KP924', @DataInicio = '2025-11-01';
+EXEC usp_ResumoVendas @NomeServico = 'Serviço-SEV657', @DataInicio = '2025-11-01';
+EXEC usp_ResumoVendas @Cliente = 'Xavier Martins', @DataInicio = '2025-11-26';
+GO

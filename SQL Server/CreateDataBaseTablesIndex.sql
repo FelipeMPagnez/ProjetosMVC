@@ -182,8 +182,8 @@ GO
 CREATE TABLE SERVICOS (
     Id              INT IDENTITY(1,1) PRIMARY KEY,
     Codigo          NVARCHAR(6) UNIQUE NOT NULL,
-    Nome            NVARCHAR(150) NOT NULL,
-    Descricao       NVARCHAR(500),
+    Nome            NVARCHAR(80) NOT NULL,
+    Descricao       NVARCHAR(250),
     Preco           DECIMAL(10,2) NOT NULL CHECK (Preco >= 0),
     DataCadastro    DATETIME2 NOT NULL DEFAULT SYSDATETIME(),
     Ativo           BIT NOT NULL DEFAULT 1

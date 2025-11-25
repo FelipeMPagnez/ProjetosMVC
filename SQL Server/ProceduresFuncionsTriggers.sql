@@ -131,11 +131,7 @@ BEGIN
         INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao, CodigoProduto, NomeProduto, Quantidade,
                                               PrecoVenda, ValorVendido, Custo, DocumentoId, Observacao, UsuarioMovimentacao)
         SELECT 
-            CASE 
-                WHEN ISNULL(I.Estoque,0) > ISNULL(D.Estoque,0) THEN 'E'
-                WHEN ISNULL(I.Estoque,0) < ISNULL(D.Estoque,0) THEN 'S'
-                ELSE 'A'
-            END AS TipoMovimentacao,
+            'A',
             I.Codigo,
             I.Nome,
             ABS(ISNULL(I.Estoque,0) - ISNULL(D.Estoque,0)) AS Quantidade,
@@ -165,7 +161,7 @@ BEGIN
         INSERT INTO dbo.MOVIMENTACOESESTOQUE (TipoMovimentacao, CodigoProduto, NomeProduto, Quantidade,
                                               PrecoVenda, ValorVendido, Custo, DocumentoId, Observacao, UsuarioMovimentacao)
         SELECT 
-            'E',
+            'A',
             I.Codigo,
             I.Nome,
             I.Estoque,
@@ -222,8 +218,8 @@ BEGIN
             INSERT INTO dbo.PRODUTOS (Codigo,Nome,Descricao,PrecoVenda,PrecoCompra,Custo,Estoque,Unidade)
             VALUES (
                 @CodigoProduto,
-                CONCAT('Produto',@CodigoProduto),
-                CONCAT('Descrição do Produto',@CodigoProduto),
+                CONCAT('Produto-',@CodigoProduto),
+                CONCAT('Descrição do Produto-',@CodigoProduto),
                 @CustoUnitario*1.75,
                 @PrecoUnitario,
                 @CustoUnitario,
@@ -239,7 +235,7 @@ BEGIN
             VALUES (
                 'E',
                 @CodigoProduto,
-                CONCAT('Produto',@CodigoProduto),
+                CONCAT('Produto-',@CodigoProduto),
                 @Quantidade,
                 @CustoUnitario*1.75,
                 0,
