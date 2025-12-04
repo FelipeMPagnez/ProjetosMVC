@@ -5,9 +5,11 @@ namespace MyProjectAPI.Services.IServices
 {
     public interface IClienteService
     {
-        Task<ResponseModels<List<ClienteCadastrarDTO>>> CadastrarClientes();
-        Task<ResponseModels<List<ClienteDTO>>> BuscarClientes();
-        Task<ResponseModels<ClienteDTO>> BuscarCliente(int id);
-        Task<ResponseModels<List<ClienteDTO>>> DeletarrClientes();
+        Task<ResponseModels<IEnumerable<ClienteCadastrarDTO>>> CadastrarClientes(ClienteCadastrarDTO cliente);
+        Task<ResponseModels<IEnumerable<ClienteDTO>>> BuscarClientes();
+        Task<ResponseModels<ClienteDTO>> BuscarClienteID(int id);
+        Task<ResponseModels<ClienteDTO>> BuscarClienteCPF(int cpf);
+        Task<ResponseModels<ClienteAtualizarDTO>> AtualizarCliente(int cpf);
+        Task<ResponseModels<bool>> DeletarrClientes();
     }
 }

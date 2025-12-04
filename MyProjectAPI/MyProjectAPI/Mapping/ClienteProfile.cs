@@ -10,6 +10,9 @@ namespace MyProjectAPI.Mapping
         {
             CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<Cliente, ClienteCadastrarDTO>().ReverseMap();
+            CreateMap<Cliente, ClienteAtualizarDTO>().ReverseMap();
+
+
         }
     }
 }

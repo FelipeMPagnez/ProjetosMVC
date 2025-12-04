@@ -17,22 +17,27 @@ namespace MyProjectAPI.Services
             _mapper = mapper;
         }
 
-        public Task<ResponseModels<ClienteDTO>> BuscarCliente(int id)
+        public Task<ResponseModels<ClienteAtualizarDTO>> AtualizarCliente(int cpf)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModels<List<ClienteDTO>>> BuscarClientes()
+        public Task<ResponseModels<ClienteDTO>> BuscarCliente(int cpf)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModels<List<ClienteCadastrarDTO>>> CadastrarClientes()
+        public Task<ResponseModels<IEnumerable<ClienteDTO>>> BuscarClientes()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ResponseModels<List<ClienteDTO>>> DeletarrClientes()
+        public Task<ResponseModels<IEnumerable<ClienteCadastrarDTO>>> CadastrarClientes(ClienteCadastrarDTO cliente)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ResponseModels<IEnumerable<ClienteDTO>>> DeletarrClientes()
         {
             throw new NotImplementedException();
         }
