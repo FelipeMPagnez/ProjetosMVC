@@ -11,7 +11,7 @@ public partial class Fornecedor
 
     public string? RazaoSocial { get; set; }
 
-    public string Cnpj { get; set; } = null!;
+    public string CNPJ { get; set; } = null!;
 
     public string? Email { get; set; }
 
@@ -19,7 +19,7 @@ public partial class Fornecedor
 
     public string? Cidade { get; set; }
 
-    public string? Uf { get; set; }
+    public string? UF { get; set; }
 
     public DateTime DataCadastro { get; set; }
 

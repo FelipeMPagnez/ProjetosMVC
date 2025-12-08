@@ -1,45 +1,78 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using MyProjectAPI.Repositorios.IRepositorios;
+using MyProjectAPI.Services.IServices;
 using MyProjectAPI.Dto;
 using MyProjectAPI.Models;
-using MyProjectAPI.Services.IServices;
 
 namespace MyProjectAPI.Services
 {
-    public class ClienteService : IClienteService
+    public class ClienteService(IClienteRepositorio repositorio, IMapper mapper) : 
+        ServicesBase<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO, Cliente>(repositorio, mapper),  IClienteService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IMapper _mapper;
+        private readonly IClienteRepositorio _clienteRepositorio = repositorio;
 
-        public ClienteService(IConfiguration configuration, IMapper mapper)
+        public override async Task<ResponseModels<ClienteCadastrarDTO>> Adicionar(ClienteCadastrarDTO cadastrarDTO)
         {
-            _configuration = configuration;
-            _mapper = mapper;
+            try
+            {
+                if (await _clienteRepositorio.ExisteCPF(cadastrarDTO.CPF))
+                {
+                    return new ResponseModels<ClienteCadastrarDTO>
+                    {
+                        Dados = cadastrarDTO,
+                        Mensagem = "CPF já existe.",
+                        Status = true
+                    };
+                }
+
+                Cliente cliente = _mapper.Map<Cliente>(cadastrarDTO);
+                await _repositorio.Adicionar(cliente);
+
+                return new ResponseModels<ClienteCadastrarDTO>
+                {
+                    Dados = cadastrarDTO,
+                    Mensagem = "Registro adicionado com sucesso.",
+                    Status = true
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels<ClienteCadastrarDTO>
+                {
+                    Mensagem = $"Erro ao adicionar registro: {ex.Message}",
+                    Status = false
+                };
+            }
         }
 
-        public Task<ResponseModels<ClienteAtualizarDTO>> AtualizarCliente(int cpf)
+        public async Task<ResponseModels<ClienteDTO>> BuscarClienteCPF(string cpf)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                ResponseModels<ClienteDTO> response = new();
 
-        public Task<ResponseModels<ClienteDTO>> BuscarCliente(int cpf)
-        {
-            throw new NotImplementedException();
-        }
+                Cliente? cliente = await _clienteRepositorio.BuscarCPF(cpf);
 
-        public Task<ResponseModels<IEnumerable<ClienteDTO>>> BuscarClientes()
-        {
-            throw new NotImplementedException();
-        }
+                if (cliente is null)
+                {
+                    response.Mensagem = "CPF não encontrado.";
+                    response.Status = false;
+                    return response;
+                }
 
-        public Task<ResponseModels<IEnumerable<ClienteCadastrarDTO>>> CadastrarClientes(ClienteCadastrarDTO cliente)
-        {
-            throw new NotImplementedException();
-        }
+                response.Dados = _mapper.Map<ClienteDTO>(cliente);
+                response.Mensagem = "Cliente encontrado.";
 
-        public Task<ResponseModels<IEnumerable<ClienteDTO>>> DeletarrClientes()
-        {
-            throw new NotImplementedException();
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels<ClienteDTO>
+                {
+                    Mensagem = $"Erro ao adicionar registro: {ex.Message}",
+                    Status = false
+                };
+            }
         }
     }
 }

@@ -52,17 +52,17 @@ public partial class MeuDbContext : DbContext
 
             entity.ToTable("CLIENTES");
 
-            entity.HasIndex(e => e.Cpf, "UQ__CLIENTES__C1F89731093A9AC2").IsUnique();
+            entity.HasIndex(e => e.CPF, "UQ__CLIENTES__C1F89731093A9AC2").IsUnique();
 
             entity.Property(e => e.Ativo).HasDefaultValue(true);
             entity.Property(e => e.Bairro).HasMaxLength(80);
-            entity.Property(e => e.Cep)
+            entity.Property(e => e.CEP)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .HasColumnName("CEP");
             entity.Property(e => e.Cidade).HasMaxLength(100);
             entity.Property(e => e.Complemento).HasMaxLength(50);
-            entity.Property(e => e.Cpf)
+            entity.Property(e => e.CPF)
                 .HasMaxLength(11)
                 .IsUnicode(false)
                 .IsFixedLength()
@@ -75,7 +75,7 @@ public partial class MeuDbContext : DbContext
             entity.Property(e => e.Telefone)
                 .HasMaxLength(17)
                 .IsUnicode(false);
-            entity.Property(e => e.Uf)
+            entity.Property(e => e.UF)
                 .HasMaxLength(2)
                 .IsUnicode(false)
                 .IsFixedLength()
@@ -185,11 +185,11 @@ public partial class MeuDbContext : DbContext
 
             entity.ToTable("FORNECEDORES");
 
-            entity.HasIndex(e => e.Cnpj, "UQ__FORNECED__AA57D6B46EBBBE4F").IsUnique();
+            entity.HasIndex(e => e.CNPJ, "UQ__FORNECED__AA57D6B46EBBBE4F").IsUnique();
 
             entity.Property(e => e.Ativo).HasDefaultValue(true);
             entity.Property(e => e.Cidade).HasMaxLength(100);
-            entity.Property(e => e.Cnpj)
+            entity.Property(e => e.CNPJ)
                 .HasMaxLength(14)
                 .IsUnicode(false)
                 .IsFixedLength()
@@ -201,7 +201,7 @@ public partial class MeuDbContext : DbContext
             entity.Property(e => e.Telefone)
                 .HasMaxLength(17)
                 .IsUnicode(false);
-            entity.Property(e => e.Uf)
+            entity.Property(e => e.UF)
                 .HasMaxLength(2)
                 .IsUnicode(false)
                 .IsFixedLength()
@@ -214,19 +214,19 @@ public partial class MeuDbContext : DbContext
 
             entity.ToTable("FUNCIONARIOS");
 
-            entity.HasIndex(e => e.Cpf, "UQ__FUNCIONA__C1F89731478AF879").IsUnique();
+            entity.HasIndex(e => e.CPF, "UQ__FUNCIONA__C1F89731478AF879").IsUnique();
 
             entity.Property(e => e.Ativo).HasDefaultValue(true);
             entity.Property(e => e.Bairro).HasMaxLength(80);
             entity.Property(e => e.Cargo).HasMaxLength(80);
-            entity.Property(e => e.Cep)
+            entity.Property(e => e.CEP)
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("CEP");
             entity.Property(e => e.Cidade).HasMaxLength(100);
             entity.Property(e => e.Complemento).HasMaxLength(50);
-            entity.Property(e => e.Cpf)
+            entity.Property(e => e.CPF)
                 .HasMaxLength(11)
                 .IsUnicode(false)
                 .IsFixedLength()
@@ -243,7 +243,7 @@ public partial class MeuDbContext : DbContext
             entity.Property(e => e.Telefone)
                 .HasMaxLength(17)
                 .IsUnicode(false);
-            entity.Property(e => e.Uf)
+            entity.Property(e => e.UF)
                 .HasMaxLength(2)
                 .IsUnicode(false)
                 .IsFixedLength()

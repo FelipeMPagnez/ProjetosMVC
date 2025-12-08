@@ -9,7 +9,7 @@ public partial class Funcionario
 
     public string Nome { get; set; } = null!;
 
-    public string Cpf { get; set; } = null!;
+    public string CPF { get; set; } = null!;
 
     public DateOnly DataNascimento { get; set; }
 
@@ -31,9 +31,9 @@ public partial class Funcionario
 
     public string? Observacoes { get; set; }
 
-    public string Uf { get; set; } = null!;
+    public string UF { get; set; } = null!;
 
-    public string? Cep { get; set; }
+    public string? CEP { get; set; }
 
     public string Cidade { get; set; } = null!;
 

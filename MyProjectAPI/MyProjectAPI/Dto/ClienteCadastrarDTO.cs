@@ -8,6 +8,11 @@ namespace MyProjectAPI.Dto
         [StringLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres")]
         public string Nome { get; set; }
 
+        [Required(ErrorMessage = "O CPF é obrigatório")]
+        [StringLength(11, MinimumLength = 11, ErrorMessage = "CPF deve conter 11 dígitos")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "CPF deve conter apenas números")]
+        public string CPF { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime? DataNascimento { get; set; }
 

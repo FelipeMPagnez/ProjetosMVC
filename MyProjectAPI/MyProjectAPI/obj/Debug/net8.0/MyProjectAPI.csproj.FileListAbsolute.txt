@@ -6,6 +6,8 @@ E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\n
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\MyProjectAPI.runtimeconfig.json
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\MyProjectAPI.dll
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\MyProjectAPI.pdb
+E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\AutoMapper.dll
+E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Azure.Core.dll
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Azure.Identity.dll
 E:\Felipe\Documentos\2 - Curso\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
