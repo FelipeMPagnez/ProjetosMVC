@@ -1,62 +1,74 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\",
+  "WorkspaceRootPath": "E:\\ProjetosMVC\\MyProjectAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\services\\clienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\clienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\irepositorios\\iclienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\irepositorios\\iclienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\services\\servicesbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\servicesbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\irepositorios\\irepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\irepositorios\\irepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\clienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\clienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\repositoriobase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\repositoriobase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\services\\iservices\\iclienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\iservices\\iclienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\services\\iservices\\iservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\iservices\\iservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\mapping\\clienteprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\mapping\\clienteprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\mapping\\clienteprofile.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\services\\clienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\clienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clienteatualizardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\dto\\clienteatualizardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\services\\servicesbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\servicesbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clientedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\dto\\clientedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\controllers\\genericcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\controllers\\genericcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clientecadastrardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\controllers\\clientecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\controllers\\clientecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\mapping\\profilebase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\mapping\\profilebase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\clienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\clienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\services\\iservices\\iservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\iservices\\iservices.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\services\\iservices\\iclienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\services\\iservices\\iclienteservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\repositoriobase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\repositoriobase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\irepositorios\\iclienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\irepositorios\\iclienterepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\repositorios\\irepositorios\\irepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\repositorios\\irepositorios\\irepositorio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clientecadastrardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\dto\\clientecadastrardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\felipe\\documentos\\2 - curso\\projetosmvc\\myprojectapi\\myprojectapi\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clienteatualizardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\dto\\clienteatualizardto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\dto\\clientedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\dto\\clientedto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|e:\\projetosmvc\\myprojectapi\\myprojectapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C313B37-A29D-46CD-9904-3AB9FB966C6C}|MyProjectAPI\\MyProjectAPI.csproj|solutionrelative:myprojectapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,30 +78,30 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 8,
+          "SelectedChildIndex": 10,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 16,
               "Title": "Program.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Program.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Program.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Program.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Program.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Program.cs",
               "RelativeToolTip": "MyProjectAPI\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABNAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-28T15:28:35.972Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 12,
               "Title": "IRepositorio.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
               "RelativeToolTip": "MyProjectAPI\\Repositorios\\IRepositorios\\IRepositorio.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAgAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-05T12:50:30.159Z",
               "IsPinned": true,
@@ -97,11 +109,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 11,
               "Title": "IClienteRepositorio.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
               "RelativeToolTip": "MyProjectAPI\\Repositorios\\IRepositorios\\IClienteRepositorio.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -111,13 +123,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 10,
               "Title": "RepositorioBase.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\RepositorioBase.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\RepositorioBase.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Repositorios\\RepositorioBase.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\RepositorioBase.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\RepositorioBase.cs",
               "RelativeToolTip": "MyProjectAPI\\Repositorios\\RepositorioBase.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAdAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-05T14:41:58.31Z",
               "IsPinned": true,
@@ -125,11 +137,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "ClienteRepositorio.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
               "RelativeToolTip": "MyProjectAPI\\Repositorios\\ClienteRepositorio.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAABAAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -139,39 +151,41 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "IServices.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IServices.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IServices.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Services\\IServices\\IServices.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IServices.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IServices.cs",
               "RelativeToolTip": "MyProjectAPI\\Services\\IServices\\IServices.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAUAAABFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-05T13:51:30.984Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 9,
               "Title": "IClienteService.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IClienteService.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IClienteService.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Services\\IServices\\IClienteService.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IClienteService.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\IServices\\IClienteService.cs",
               "RelativeToolTip": "MyProjectAPI\\Services\\IServices\\IClienteService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T13:31:04.726Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "ServicesBase.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ServicesBase.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ServicesBase.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Services\\ServicesBase.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ServicesBase.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ServicesBase.cs",
               "RelativeToolTip": "MyProjectAPI\\Services\\ServicesBase.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAI0AAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAJkAAAAAAAAAAADgvzcAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-06T01:20:52.598Z",
               "IsPinned": true,
@@ -179,13 +193,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "ClienteService.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ClienteService.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ClienteService.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Services\\ClienteService.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ClienteService.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Services\\ClienteService.cs",
               "RelativeToolTip": "MyProjectAPI\\Services\\ClienteService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABOAAAAAAAAAA==",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAxwEMAAABKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T13:30:47.014Z",
               "IsPinned": true,
@@ -193,68 +207,113 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 1,
               "Title": "ClienteProfile.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ClienteProfile.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ClienteProfile.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Mapping\\ClienteProfile.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ClienteProfile.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ClienteProfile.cs",
               "RelativeToolTip": "MyProjectAPI\\Mapping\\ClienteProfile.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T13:59:41.383Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 0,
               "Title": "Cliente.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Models\\Cliente.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Models\\Cliente.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Models\\Cliente.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Models\\Cliente.cs",
               "RelativeToolTip": "MyProjectAPI\\Models\\Cliente.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAcAAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAkAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-04T13:27:21.446Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "ClienteDTO.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteDTO.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteDTO.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Dto\\ClienteDTO.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteDTO.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteDTO.cs",
               "RelativeToolTip": "MyProjectAPI\\Dto\\ClienteDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T14:00:58.534Z",
               "IsPinned": true
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "ClienteCadastrarDTO.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
               "RelativeToolTip": "MyProjectAPI\\Dto\\ClienteCadastrarDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAnAAAAAAAAAA==",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAgwC8AAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-03T14:01:08.478Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": "ClienteAtualizarDTO.cs",
-              "DocumentMoniker": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
               "RelativeDocumentMoniker": "MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
-              "ToolTip": "E:\\Felipe\\Documentos\\2 - Curso\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
               "RelativeToolTip": "MyProjectAPI\\Dto\\ClienteAtualizarDTO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAA1wCwAAABDAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-04T13:30:21.967Z",
-              "IsPinned": true
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "GenericController.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Controllers\\GenericController.cs",
+              "RelativeDocumentMoniker": "MyProjectAPI\\Controllers\\GenericController.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Controllers\\GenericController.cs",
+              "RelativeToolTip": "MyProjectAPI\\Controllers\\GenericController.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAD4v1kAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T12:56:37.945Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ClienteController.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Controllers\\ClienteController.cs",
+              "RelativeDocumentMoniker": "MyProjectAPI\\Controllers\\ClienteController.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Controllers\\ClienteController.cs",
+              "RelativeToolTip": "MyProjectAPI\\Controllers\\ClienteController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T01:49:11.962Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ProfileBase.cs",
+              "DocumentMoniker": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ProfileBase.cs",
+              "RelativeDocumentMoniker": "MyProjectAPI\\Mapping\\ProfileBase.cs",
+              "ToolTip": "E:\\ProjetosMVC\\MyProjectAPI\\MyProjectAPI\\Mapping\\ProfileBase.cs",
+              "RelativeToolTip": "MyProjectAPI\\Mapping\\ProfileBase.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-11T16:14:02.45Z",
+              "EditorCaption": ""
             }
           ]
         }

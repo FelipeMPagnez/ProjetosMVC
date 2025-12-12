@@ -16,7 +16,7 @@ BEGIN
         AND @FornecedorId IS NULL 
         AND @NumeroNFe IS NULL 
         AND @CodigoProduto IS NULL
-        THROW 5000, 'Tipo de consulta inválido. Use: DATA, FORNECEDOR, INTERVALO DE DATAS, NOTA_FISCAL, PRODUTO', 1;
+        THROW 50001, 'Pelo menos um parâmetro de filtro deve ser informado.', 1;
 
     -- Atribuição para data fim vazia
     IF @DataInicio IS NOT NULL AND @DataFim IS NULL

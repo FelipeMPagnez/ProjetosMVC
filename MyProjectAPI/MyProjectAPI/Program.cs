@@ -12,7 +12,7 @@ builder.Services.Scan(scan => scan
         .AddClasses(classes => classes.InNamespaces("MyProjectAPI.Services"))
             .AsMatchingInterface()
             .WithScopedLifetime()
-        .AddClasses(classes => classes.InNamespaces("MyProjectAPI.Repositories"))
+        .AddClasses(classes => classes.InNamespaces("MyProjectAPI.Repositorios"))
             .AsMatchingInterface()
             .WithScopedLifetime()
 );

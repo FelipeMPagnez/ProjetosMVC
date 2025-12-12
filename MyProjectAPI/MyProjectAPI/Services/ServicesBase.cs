@@ -1,4 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using MyProjectAPI.Controllers;
 using MyProjectAPI.Dto;
 using MyProjectAPI.Models;
 using MyProjectAPI.Repositorios.IRepositorios;
@@ -6,29 +9,32 @@ using MyProjectAPI.Services.IServices;
 
 namespace MyProjectAPI.Services
 {
-    public class ServicesBase<A, C, P, TEntity> : IServices<A, C, P>
+    public class ServicesBase<AtualizarDTO, CadastrarDTO, TEntityDTO, TEntity> : IServices<AtualizarDTO, CadastrarDTO, TEntityDTO>
         where TEntity : class
-        where A : class
-        where C : class
-        where P : class
+        where AtualizarDTO : class
+        where CadastrarDTO : class
+        where TEntityDTO : class
     {
         protected readonly IRepositorio<TEntity> _repositorio;
         protected readonly IMapper _mapper;
+        protected readonly ILogger<ServicesBase<AtualizarDTO, CadastrarDTO, TEntityDTO, TEntity>> _logger;
 
-        public ServicesBase(IRepositorio<TEntity> repositorio, IMapper mapper)
+        public ServicesBase(IRepositorio<TEntity> repositorio, IMapper mapper, 
+                            ILogger<ServicesBase<AtualizarDTO, CadastrarDTO, TEntityDTO, TEntity>> logger)
         {
             _repositorio = repositorio;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public virtual async Task<ResponseModels<C>> Adicionar(C cadastrarDTO)
+        public virtual async Task<ResponseModels<CadastrarDTO>> Adicionar(CadastrarDTO cadastrarDTO)
         {
             try
             {
                 TEntity entity = _mapper.Map<TEntity>(cadastrarDTO);
                 await _repositorio.Adicionar(entity);
 
-                return new ResponseModels<C>
+                return new ResponseModels<CadastrarDTO>
                 {
                     Dados = cadastrarDTO,
                     Mensagem = "Registro adicionado com sucesso.",
@@ -37,103 +43,115 @@ namespace MyProjectAPI.Services
             }
             catch (Exception ex)
             {
-                return new ResponseModels<C>
+                return new ResponseModels<CadastrarDTO>
                 {
-                    Mensagem = $"Erro ao adicionar registro: {ex.Message}",
-                    Status = false
+                    Mensagem = $"Erro ao adicionar registro: {ex.Message}"
                 };
             }
         }
 
-        public virtual async Task<ResponseModels<A>> AtualizarID(int id, A atualizarDTO)
+        public virtual async Task<ResponseModels<AtualizarDTO>> AtualizarID(int id, AtualizarDTO atualizarDTO)
         {
             try
             {
-                ResponseModels<A> response = new();
+                TEntity? tEntityExistente = await _repositorio.BuscarID(id);
 
-                if (await _repositorio.BuscarID(id) is null)
+                if (tEntityExistente is null)
+                    return new ResponseModels<AtualizarDTO>
+                    {
+                        Mensagem = $"Registro com ID {id}, não encontrado."
+                    };
+
+                _mapper.Map(atualizarDTO, tEntityExistente);
+                await _repositorio.Atualizar(tEntityExistente);
+
+                return new ResponseModels<AtualizarDTO>
                 {
-                    response.Mensagem = $"Registro com ID {id}, não encontrado.";
-                    response.Status = false;
-                    return response;
-                }
-
-                TEntity entity = _mapper.Map<TEntity>(atualizarDTO);
-                await _repositorio.Atualizar(entity);
-
-                response.Dados = atualizarDTO;
-                response.Mensagem = "Registro atualizado com sucesso.";
-
-                return response;
+                    Dados = atualizarDTO,
+                    Mensagem = "Registro atualizado com sucesso.",
+                    Status = true
+                };
             }
-            catch(Exception ex)
+            catch (DbUpdateException dbEx)
             {
-                return new ResponseModels<A>
+                // Captura o inner exception específico do banco
+                var innerMessage = dbEx.InnerException?.Message ?? dbEx.Message;
+                var innerStackTrace = dbEx.InnerException?.StackTrace;
+
+                // Log detalhado
+                _logger.LogError(dbEx, "Erro no banco de dados ao atualizar registro ID {Id}", id);
+
+                return new ResponseModels<AtualizarDTO>
                 {
-                    Mensagem = $"Erro ao atualizar registro: {ex.Message}",
+                    Mensagem = $"Erro no banco de dados: {innerMessage}",
                     Status = false
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels<AtualizarDTO>
+                {
+                    Mensagem = $"Erro ao atualizar registro: {ex.Message}"
                 };
             }
         }
 
 
-        public virtual async Task<ResponseModels<P>> BuscarID(int id)
+        public virtual async Task<ResponseModels<TEntityDTO>> BuscarID(int id)
         {
             try
             {
-                ResponseModels<P> response = new();
+                ResponseModels<TEntityDTO> response = new();
 
                 TEntity? TEntity = await _repositorio.BuscarID(id);
 
                 if (TEntity is null)
+                    return new ResponseModels<TEntityDTO>
+                    {
+                        Mensagem = $"Registro com ID {id}, não encontrado."
+                    };
+
+                return new ResponseModels<TEntityDTO>
                 {
-                    response.Mensagem = $"Registro com ID {id}, não encontrado.";
-                    response.Status = false;
-                    return response;
-                }
-
-                response.Dados = _mapper.Map<P>(TEntity);
-                response.Mensagem = "Registro encontrado com sucesso.";
-
-                return response;
+                    Dados = _mapper.Map<TEntityDTO>(TEntity),
+                    Mensagem = "Registro encontrado com sucesso.",
+                    Status = true
+                };
             }
             catch(Exception ex)
             {
-                return new ResponseModels<P>
+                return new ResponseModels<TEntityDTO>
                 {
-                    Mensagem = $"Erro ao buscar registro: {ex.Message}",
-                    Status = false
+                    Mensagem = $"Erro ao buscar registro: {ex.Message}"
                 };
             }
         }
 
-        public virtual async Task<ResponseModels<IEnumerable<P>>> BuscarTodos()
+        public virtual async Task<ResponseModels<IEnumerable<TEntityDTO>>> BuscarTodos()
         {
 
             try
             {
-                ResponseModels<IEnumerable<P>> response = new();
-
                 IEnumerable<TEntity> entities = await _repositorio.BuscarTodos();
 
                 if (!entities.Any())
+                    return new ResponseModels<IEnumerable<TEntityDTO>>
+                    {
+                        Mensagem = "Lista vazia."
+                    };
+
+                return new ResponseModels<IEnumerable<TEntityDTO>>
                 {
-                    response.Mensagem = "Lista vazia.";
-                    response.Status = false;
-                    return response;
-                }
-
-                response.Dados = _mapper.Map<IEnumerable<P>>(entities);
-                response.Mensagem = "Registros listados com sucesso.";
-
-                return response;
+                    Dados = _mapper.Map<IEnumerable<TEntityDTO>>(entities),
+                    Mensagem = "Registros listados com sucesso.",
+                    Status = true
+                };
             }
             catch (Exception ex)
             {
-                return new ResponseModels<IEnumerable<P>>
+                return new ResponseModels<IEnumerable<TEntityDTO>>
                 {
-                    Mensagem = $"Erro ao listar registros: {ex.Message}",
-                    Status = false
+                    Mensagem = $"Erro ao listar registros: {ex.Message}"
                 };
             }
 
@@ -143,27 +161,27 @@ namespace MyProjectAPI.Services
         {
             try
             {
-                ResponseModels<string> response = new();
                 TEntity? entity = await _repositorio.BuscarID(id);
 
                 if (entity is null)
-                {
-                    response.Mensagem = $"Registro com ID {id}, não encontrado.";
-                    response.Status = false;
-                    return response;
-                }
+                    return new ResponseModels<string>
+                    {
+                        Mensagem = $"Registro com ID {id}, não encontrado."
+                    };
 
                 await _repositorio.Deletar(entity);
-                response.Mensagem = "Registro excluído com sucesso.";
-
-                return response;
+                
+                return new ResponseModels<string>
+                {
+                    Mensagem = "Registro excluído com sucesso.",
+                    Status = true
+                };
             }
             catch (Exception ex)
             {
                 return new ResponseModels<string>
                 {
-                    Mensagem = $"Erro ao deletar registro: {ex.Message}",
-                    Status = false
+                    Mensagem = $"Erro ao deletar registro: {ex.Message}"
                 };
             }
         }

@@ -4,15 +4,18 @@ using MyProjectAPI.Models;
 
 namespace MyProjectAPI.Mapping
 {
-    public class ClienteProfile : Profile
+    public class ClienteProfile : ProfileBase<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO, Cliente>
     {
         public ClienteProfile()
         {
-            CreateMap<Cliente, ClienteDTO>().ReverseMap();
-            CreateMap<Cliente, ClienteCadastrarDTO>().ReverseMap();
-            CreateMap<Cliente, ClienteAtualizarDTO>().ReverseMap();
+            CreateMap<ClienteCadastrarDTO, Cliente>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.DataCadastro, opt => opt.MapFrom(src => DateTime.Now));
 
-
+            CreateMap<ClienteAtualizarDTO, Cliente>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CPF, opt => opt.Ignore())
+                .ForMember(dest => dest.DataCadastro, opt => opt.Ignore());
         }
     }
 }

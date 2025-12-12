@@ -14,7 +14,7 @@ namespace MyProjectAPI.Dto
         public string CPF { get; set; }
 
         [DataType(DataType.Date)]
-        public DateTime? DataNascimento { get; set; }
+        public DateOnly? DataNascimento { get; set; }
 
         [EmailAddress(ErrorMessage = "Email em formato inválido")]
         [StringLength(150, ErrorMessage = "Email deve ter no máximo 150 caracteres")]
@@ -45,7 +45,7 @@ namespace MyProjectAPI.Dto
             ErrorMessage = "UF inválida")]
         public string UF { get; set; }
 
-        [StringLength(7, ErrorMessage = "CEP deve ter no máximo 7 caracteres")]
+        [StringLength(10, ErrorMessage = "CEP deve ter no máximo 10 caracteres")]
         public string CEP { get; set; }
 
         public string Historico { get; set; }

@@ -49,37 +49,21 @@ public partial class MeuDbContext : DbContext
         modelBuilder.Entity<Cliente>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__CLIENTES__3214EC079FFEC4F4");
-
             entity.ToTable("CLIENTES");
-
             entity.HasIndex(e => e.CPF, "UQ__CLIENTES__C1F89731093A9AC2").IsUnique();
-
             entity.Property(e => e.Ativo).HasDefaultValue(true);
             entity.Property(e => e.Bairro).HasMaxLength(80);
-            entity.Property(e => e.CEP)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .HasColumnName("CEP");
+            entity.Property(e => e.CEP).HasMaxLength(10).IsUnicode(false).HasColumnName("CEP");
             entity.Property(e => e.Cidade).HasMaxLength(100);
             entity.Property(e => e.Complemento).HasMaxLength(50);
-            entity.Property(e => e.CPF)
-                .HasMaxLength(11)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("CPF");
+            entity.Property(e => e.CPF).HasMaxLength(11).IsUnicode(false).IsFixedLength().HasColumnName("CPF");
             entity.Property(e => e.DataCadastro).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.Email).HasMaxLength(150);
             entity.Property(e => e.Logradouro).HasMaxLength(120);
             entity.Property(e => e.Nome).HasMaxLength(100);
             entity.Property(e => e.Numero).HasMaxLength(10);
-            entity.Property(e => e.Telefone)
-                .HasMaxLength(17)
-                .IsUnicode(false);
-            entity.Property(e => e.UF)
-                .HasMaxLength(2)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("UF");
+            entity.Property(e => e.Telefone).HasMaxLength(17).IsUnicode(false);
+            entity.Property(e => e.UF).HasMaxLength(2).IsUnicode(false).IsFixedLength().HasColumnName("UF");
         });
 
         modelBuilder.Entity<Entrada>(entity =>

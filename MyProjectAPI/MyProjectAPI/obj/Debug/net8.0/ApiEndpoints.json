@@ -1,0 +1,97 @@
+[
+  {
+    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "BuscarTodos",
+    "RelativePath": "api/Cliente",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "Adicionar",
+    "RelativePath": "api/Cliente",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cadatrarDTO",
+        "Type": "MyProjectAPI.Dto.ClienteCadastrarDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "Atualizar",
+    "RelativePath": "api/Cliente",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "atualizarDTO",
+        "Type": "MyProjectAPI.Dto.ClienteAtualizarDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "Deletar",
+    "RelativePath": "api/Cliente",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "BuscarID",
+    "RelativePath": "api/Cliente/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "MyProjectAPI.Controllers.ClienteController",
+    "Method": "BuscarCPF",
+    "RelativePath": "api/Cliente/cpf/{cpf}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cpf",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

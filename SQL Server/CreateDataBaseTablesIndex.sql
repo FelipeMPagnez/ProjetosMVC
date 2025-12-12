@@ -48,7 +48,7 @@ CREATE TABLE FUNCIONARIOS (
                             'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
                             'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'
                         )),
-    CEP                 CHAR(7),                                             
+    CEP                 CHAR(10),                                             
     Cidade              NVARCHAR(100) NOT NULL,
     Logradouro          NVARCHAR(120),
     Numero              NVARCHAR(4),
@@ -75,7 +75,7 @@ CREATE TABLE CLIENTES (
                         'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG',
                         'PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'
                     )),
-    CEP             VARCHAR(7),
+    CEP             VARCHAR(10),
     Historico       NVARCHAR(MAX),
     Ativo           BIT NOT NULL DEFAULT 1,
     DataCadastro    DATETIME2 NOT NULL DEFAULT SYSDATETIME()

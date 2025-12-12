@@ -3,12 +3,12 @@ using MyProjectAPI.Models;
 
 namespace MyProjectAPI.Services.IServices
 {
-    public interface IServices<A,C,P>
+    public interface IServices<AtualizarDTO, CadastrarDTO, TEntityDTO>
     {
-        Task<ResponseModels<C>> Adicionar(C cadastrarDTO);
-        Task<ResponseModels<A>> AtualizarID(int id, A atualizarDTO);
-        Task<ResponseModels<P>> BuscarID(int id); // DTO padrão
-        Task<ResponseModels<IEnumerable<P>>> BuscarTodos(); // DTO padrão
+        Task<ResponseModels<CadastrarDTO>> Adicionar(CadastrarDTO cadastrarDTO);
+        Task<ResponseModels<AtualizarDTO>> AtualizarID(int id, AtualizarDTO atualizarDTO);
+        Task<ResponseModels<TEntityDTO>> BuscarID(int id); // DTO padrão
+        Task<ResponseModels<IEnumerable<TEntityDTO>>> BuscarTodos(); // DTO padrão
         Task<ResponseModels<string>> Deletar(int id);
     }
 }
