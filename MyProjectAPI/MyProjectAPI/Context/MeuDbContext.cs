@@ -179,7 +179,7 @@ public partial class MeuDbContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("CNPJ");
             entity.Property(e => e.DataCadastro).HasDefaultValueSql("(sysdatetime())");
-            entity.Property(e => e.Email).HasMaxLength(120);
+            entity.Property(e => e.Email).HasMaxLength(150);
             entity.Property(e => e.NomeFantasia).HasMaxLength(150);
             entity.Property(e => e.RazaoSocial).HasMaxLength(150);
             entity.Property(e => e.Telefone)
@@ -218,7 +218,7 @@ public partial class MeuDbContext : DbContext
             entity.Property(e => e.DataAdmissao).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.DataCadastro).HasDefaultValueSql("(sysdatetime())");
             entity.Property(e => e.Departamento).HasMaxLength(80);
-            entity.Property(e => e.Email).HasMaxLength(120);
+            entity.Property(e => e.Email).HasMaxLength(150);
             entity.Property(e => e.Logradouro).HasMaxLength(120);
             entity.Property(e => e.Nome).HasMaxLength(100);
             entity.Property(e => e.Numero).HasMaxLength(10);

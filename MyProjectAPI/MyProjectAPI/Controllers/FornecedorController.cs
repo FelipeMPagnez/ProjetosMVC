@@ -1,28 +1,28 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyProjectAPI.Dto;
 using MyProjectAPI.Models;
 using MyProjectAPI.Services.IServices;
-using System.Runtime.CompilerServices;
 
 namespace MyProjectAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Produces("application/json")]
-    public class ClienteController(IClienteService services,
-                    ILogger<GenericController<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO>> logger,
+    public class FornecedorController(IFornecedorService services,
+                    ILogger<GenericController<FornecedorAtualizarDTO, FornecedorCadastrarDTO, FornecedorDTO>> logger,
                     IMapper mapper) :
-                 GenericController<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO>(services, logger, mapper)
+                 GenericController<FornecedorAtualizarDTO, FornecedorCadastrarDTO, FornecedorDTO>(services, logger, mapper)
     {
-        private readonly IClienteService _clienteService = services;
+        private readonly IFornecedorService _fornecedorService = services;
 
-        [HttpGet("cpf/{cpf}")]
-        public async Task<ActionResult> BuscarCPF(string cpf)
+        [HttpGet("cnpj/{cnpj}")]
+        public async Task<ActionResult> BuscarCNPJ(string cnpj)
         {
             try
             {
-                ResponseModels<ClienteDTO> response = await _clienteService.BuscarCPF(cpf);
+                ResponseModels<FornecedorDTO> response = await _fornecedorService.BuscarCNPJ(cnpj);
 
                 if (!response.Status)
                     NotFound(response);

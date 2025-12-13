@@ -93,6 +93,8 @@ E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\AutoMapper.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Azure.Core.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Azure.Identity.dll
+E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.AspNetCore.JsonPatch.dll
+E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.Data.SqlClient.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.dll
@@ -112,6 +114,8 @@ E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.IdentityMode
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.OpenApi.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.SqlServer.Server.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Microsoft.Win32.SystemEvents.dll
+E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Newtonsoft.Json.dll
+E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Newtonsoft.Json.Bson.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Scrutor.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Swashbuckle.AspNetCore.Swagger.dll
 E:\ProjetosMVC\MyProjectAPI\MyProjectAPI\bin\Debug\net8.0\Swashbuckle.AspNetCore.SwaggerGen.dll

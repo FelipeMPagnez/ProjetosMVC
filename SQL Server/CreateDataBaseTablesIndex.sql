@@ -35,7 +35,7 @@ CREATE TABLE FUNCIONARIOS (
     Nome                NVARCHAR(100) NOT NULL,                             
     CPF                 CHAR(11) NOT NULL UNIQUE,
     DataNascimento      DATE NOT NULL CHECK (DataNascimento <= GETDATE()),                
-    Email               NVARCHAR(120),                                     
+    Email               NVARCHAR(150),                                     
     Telefone            VARCHAR(17),                                    
     Cargo               NVARCHAR(80) NOT NULL,                             
     Departamento        NVARCHAR(80) NOT NULL,                      
@@ -87,7 +87,7 @@ CREATE TABLE FORNECEDORES (
     NomeFantasia    NVARCHAR(150) NOT NULL,
     RazaoSocial     NVARCHAR(150),
     CNPJ            CHAR(14) UNIQUE NOT NULL,
-    Email           NVARCHAR(120),
+    Email           NVARCHAR(150),
     Telefone        VARCHAR(17),
     Cidade          NVARCHAR(100),
     UF              CHAR(2) CHECK (UF IN (
