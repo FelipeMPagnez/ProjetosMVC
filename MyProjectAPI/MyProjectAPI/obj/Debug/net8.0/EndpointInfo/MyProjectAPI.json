@@ -34,7 +34,33 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClienteDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClienteDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClienteDTO"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -46,22 +72,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteCadastrarDTO"
+                "$ref": "#/components/schemas/ClienteCreateDTO"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteCadastrarDTO"
+                "$ref": "#/components/schemas/ClienteCreateDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteCadastrarDTO"
+                "$ref": "#/components/schemas/ClienteCreateDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteCadastrarDTO"
+                "$ref": "#/components/schemas/ClienteCreateDTO"
               }
             }
           }
@@ -116,22 +142,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteAtualizarDTO"
+                "$ref": "#/components/schemas/ClienteUpdateDTO"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteAtualizarDTO"
+                "$ref": "#/components/schemas/ClienteUpdateDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteAtualizarDTO"
+                "$ref": "#/components/schemas/ClienteUpdateDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ClienteAtualizarDTO"
+                "$ref": "#/components/schemas/ClienteUpdateDTO"
               }
             }
           }
@@ -194,7 +220,33 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FornecedorUpdateDTO"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FornecedorUpdateDTO"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FornecedorUpdateDTO"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -206,22 +258,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorCadastrarDTO"
+                "$ref": "#/components/schemas/FornecedorCreateDTO"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorCadastrarDTO"
+                "$ref": "#/components/schemas/FornecedorCreateDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorCadastrarDTO"
+                "$ref": "#/components/schemas/FornecedorCreateDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorCadastrarDTO"
+                "$ref": "#/components/schemas/FornecedorCreateDTO"
               }
             }
           }
@@ -276,22 +328,22 @@
           "content": {
             "application/json-patch+json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorAtualizarDTO"
+                "$ref": "#/components/schemas/FornecedorDTO"
               }
             },
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorAtualizarDTO"
+                "$ref": "#/components/schemas/FornecedorDTO"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorAtualizarDTO"
+                "$ref": "#/components/schemas/FornecedorDTO"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/FornecedorAtualizarDTO"
+                "$ref": "#/components/schemas/FornecedorDTO"
               }
             }
           }
@@ -328,90 +380,7 @@
   },
   "components": {
     "schemas": {
-      "ClienteAtualizarDTO": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "nome": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "dataNascimento": {
-            "type": "string",
-            "format": "date",
-            "nullable": true
-          },
-          "email": {
-            "maxLength": 150,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "telefone": {
-            "maxLength": 17,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "logradouro": {
-            "maxLength": 120,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "numero": {
-            "maxLength": 4,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "complemento": {
-            "maxLength": 50,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "bairro": {
-            "maxLength": 80,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "cidade": {
-            "maxLength": 100,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "uf": {
-            "maxLength": 2,
-            "minLength": 2,
-            "pattern": "^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$",
-            "type": "string",
-            "nullable": true
-          },
-          "cep": {
-            "maxLength": 10,
-            "minLength": 0,
-            "type": "string",
-            "nullable": true
-          },
-          "historico": {
-            "type": "string",
-            "nullable": true
-          },
-          "ativo": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "ClienteCadastrarDTO": {
+      "ClienteCreateDTO": {
         "required": [
           "cidade",
           "cpf",
@@ -500,17 +469,163 @@
         },
         "additionalProperties": false
       },
-      "FornecedorAtualizarDTO": {
-        "required": [
-          "nomeFantasia",
-          "uf"
-        ],
+      "ClienteDTO": {
         "type": "object",
         "properties": {
           "id": {
             "type": "integer",
             "format": "int32"
           },
+          "nome": {
+            "type": "string",
+            "nullable": true
+          },
+          "cpf": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "logradouro": {
+            "type": "string",
+            "nullable": true
+          },
+          "numero": {
+            "type": "string",
+            "nullable": true
+          },
+          "complemento": {
+            "type": "string",
+            "nullable": true
+          },
+          "bairro": {
+            "type": "string",
+            "nullable": true
+          },
+          "cidade": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "cep": {
+            "type": "string",
+            "nullable": true
+          },
+          "historico": {
+            "type": "string",
+            "nullable": true
+          },
+          "ativo": {
+            "type": "boolean"
+          },
+          "dataCadastro": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ClienteUpdateDTO": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "dataNascimento": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "email": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "telefone": {
+            "maxLength": 17,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "logradouro": {
+            "maxLength": 120,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "numero": {
+            "maxLength": 4,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "complemento": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "bairro": {
+            "maxLength": 80,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "cidade": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "maxLength": 2,
+            "minLength": 2,
+            "pattern": "^(AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$",
+            "type": "string",
+            "nullable": true
+          },
+          "cep": {
+            "maxLength": 10,
+            "minLength": 0,
+            "type": "string",
+            "nullable": true
+          },
+          "historico": {
+            "type": "string",
+            "nullable": true
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FornecedorCreateDTO": {
+        "required": [
+          "cnpj",
+          "nomeFantasia",
+          "uf"
+        ],
+        "type": "object",
+        "properties": {
           "nomeFantasia": {
             "maxLength": 150,
             "minLength": 0,
@@ -521,6 +636,12 @@
             "minLength": 0,
             "type": "string",
             "nullable": true
+          },
+          "cnpj": {
+            "maxLength": 14,
+            "minLength": 0,
+            "pattern": "^[0-9]*$",
+            "type": "string"
           },
           "email": {
             "maxLength": 150,
@@ -553,9 +674,53 @@
         },
         "additionalProperties": false
       },
-      "FornecedorCadastrarDTO": {
+      "FornecedorDTO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nomeFantasia": {
+            "type": "string",
+            "nullable": true
+          },
+          "razaoSocial": {
+            "type": "string",
+            "nullable": true
+          },
+          "cnpj": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "telefone": {
+            "type": "string",
+            "nullable": true
+          },
+          "cidade": {
+            "type": "string",
+            "nullable": true
+          },
+          "uf": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataCadastro": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ativo": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "FornecedorUpdateDTO": {
         "required": [
-          "cnpj",
           "nomeFantasia",
           "uf"
         ],
@@ -571,12 +736,6 @@
             "minLength": 0,
             "type": "string",
             "nullable": true
-          },
-          "cnpj": {
-            "maxLength": 14,
-            "minLength": 0,
-            "pattern": "^[0-9]*$",
-            "type": "string"
           },
           "email": {
             "maxLength": 150,

@@ -7,33 +7,15 @@ using System.Runtime.CompilerServices;
 
 namespace MyProjectAPI.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
-    public class ClienteController(IClienteService services,
-                    ILogger<GenericController<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO>> logger,
-                    IMapper mapper) :
-                 GenericController<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO>(services, logger, mapper)
+    [ApiController]
+    public class ClienteController(IClienteService services) :
+                 BaseController<ClienteDTO, ClienteCreateDTO, ClienteUpdateDTO>(services)
     {
         private readonly IClienteService _clienteService = services;
 
         [HttpGet("cpf/{cpf}")]
-        public async Task<ActionResult> BuscarCPF(string cpf)
-        {
-            try
-            {
-                ResponseModels<ClienteDTO> response = await _clienteService.BuscarCPF(cpf);
-
-                if (!response.Status)
-                    NotFound(response);
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro ao buscar registro");
-                return StatusCode(500, "Erro interno do servidor");
-            }
-        }
+        public async Task<ActionResult> GetByCpfAsync(string cpf) =>
+            Ok(await _clienteService.GetByCpfAsync(cpf));
     }
 }

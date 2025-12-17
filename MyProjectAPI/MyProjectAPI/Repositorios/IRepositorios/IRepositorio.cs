@@ -4,10 +4,10 @@ namespace MyProjectAPI.Repositorios.IRepositorios
 {
     public interface IRepositorio<T>
     {
-        Task Adicionar(T entity);
-        Task Atualizar(T entity);
-        Task<T?> BuscarID(int id);
-        Task<IEnumerable<T>> BuscarTodos();
-        Task Deletar(T entity);
+        Task CreateAsync(T entity);
+        Task UpdateAsync(T entity);
+        Task<T?> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task DeleteAsync(T entity);
     }
 }

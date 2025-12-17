@@ -7,33 +7,15 @@ using MyProjectAPI.Services.IServices;
 
 namespace MyProjectAPI.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    [Produces("application/json")]
-    public class FornecedorController(IFornecedorService services,
-                    ILogger<GenericController<FornecedorAtualizarDTO, FornecedorCadastrarDTO, FornecedorDTO>> logger,
-                    IMapper mapper) :
-                 GenericController<FornecedorAtualizarDTO, FornecedorCadastrarDTO, FornecedorDTO>(services, logger, mapper)
+    [ApiController]
+    public class FornecedorController(IFornecedorService services) :
+                 BaseController<FornecedorUpdateDTO, FornecedorCreateDTO, FornecedorDTO>(services)
     {
         private readonly IFornecedorService _fornecedorService = services;
 
         [HttpGet("cnpj/{cnpj}")]
-        public async Task<ActionResult> BuscarCNPJ(string cnpj)
-        {
-            try
-            {
-                ResponseModels<FornecedorDTO> response = await _fornecedorService.BuscarCNPJ(cnpj);
-
-                if (!response.Status)
-                    NotFound(response);
-
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Erro ao buscar registro");
-                return StatusCode(500, "Erro interno do servidor");
-            }
-        }
+        public async Task<ActionResult> GetByCnpjAsync(string cnpj) =>
+            Ok(await _fornecedorService.GetByCnpjAsync(cnpj));
     }
 }

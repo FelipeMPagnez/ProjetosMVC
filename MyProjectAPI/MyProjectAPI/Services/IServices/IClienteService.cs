@@ -3,8 +3,8 @@ using MyProjectAPI.Models;
 
 namespace MyProjectAPI.Services.IServices
 {
-    public interface IClienteService : IServices<ClienteAtualizarDTO, ClienteCadastrarDTO, ClienteDTO>
+    public interface IClienteService : IServices<ClienteDTO, ClienteCreateDTO, ClienteUpdateDTO>
     {
-        Task<ResponseModels<ClienteDTO>> BuscarCPF(string cpf);
+        Task<ClienteDTO> GetByCpfAsync(string cpf);
     }
 }

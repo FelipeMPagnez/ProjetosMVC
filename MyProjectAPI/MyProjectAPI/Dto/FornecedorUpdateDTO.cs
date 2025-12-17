@@ -2,23 +2,17 @@
 
 namespace MyProjectAPI.Dto
 {
-    public class FornecedorCadastrarDTO
+    public class FornecedorUpdateDTO
     {
-
         [Required(ErrorMessage = "O nome fantasia é obrigatório")]
-        [StringLength(150, ErrorMessage = "O nome fantasia deve ter no máximo 150 caracteres")]
+        [StringLength(150, ErrorMessage ="O nome fantasia deve ter no máximo 150 caracteres")]
         public string NomeFantasia { get; set; } = null!;
 
-        [StringLength(150, ErrorMessage = "A razão social deve ter no máximo 150 caracteres")]
+        [StringLength(150, ErrorMessage ="A razão social deve ter no máximo 150 caracteres")]
         public string? RazaoSocial { get; set; }
 
-        [Required(ErrorMessage ="O CNPJ é obrigatório")]
-        [StringLength(14, ErrorMessage ="O CNPJ deve ter 14 caracteres")]
-        [RegularExpression("^[0-9]*$", ErrorMessage ="O CNPJ deve conter apenas números")]
-        public string CNPJ { get; set; } = null!;
-
-        [EmailAddress(ErrorMessage = "Email em formato inválido")]
-        [StringLength(150, ErrorMessage = "Email deve ter no máximo 150 caracteres")]
+        [EmailAddress(ErrorMessage ="Email em formato inválido")]
+        [StringLength(150, ErrorMessage ="Email deve ter no máximo 150 caracteres")]
         public string? Email { get; set; }
 
         [StringLength(17, ErrorMessage = "Telefone deve ter no máximo 17 caracteres")]

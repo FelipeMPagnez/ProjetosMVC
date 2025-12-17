@@ -1,33 +1,43 @@
 [
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "BuscarTodos",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "GetAllAsync",
     "RelativePath": "api/Cliente",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Adicionar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "CreateAsync",
     "RelativePath": "api/Cliente",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cadatrarDTO",
-        "Type": "MyProjectAPI.Dto.ClienteCadastrarDTO",
+        "Name": "createDTO",
+        "Type": "MyProjectAPI.Dto.ClienteCreateDTO",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "BuscarID",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "GetByIdAsync",
     "RelativePath": "api/Cliente/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -42,8 +52,8 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Atualizar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "UpdateByIdAsync",
     "RelativePath": "api/Cliente/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -55,16 +65,16 @@
         "IsRequired": true
       },
       {
-        "Name": "atualizarDTO",
-        "Type": "MyProjectAPI.Dto.ClienteAtualizarDTO",
+        "Name": "uptadeDTO",
+        "Type": "MyProjectAPI.Dto.ClienteUpdateDTO",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.ClienteAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Deletar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.ClienteDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.ClienteUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "DeleteAsync",
     "RelativePath": "api/Cliente/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -80,7 +90,7 @@
   },
   {
     "ContainingType": "MyProjectAPI.Controllers.ClienteController",
-    "Method": "BuscarCPF",
+    "Method": "GetByCpfAsync",
     "RelativePath": "api/Cliente/cpf/{cpf}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -95,34 +105,44 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.FornecedorAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "BuscarTodos",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "GetAllAsync",
     "RelativePath": "api/Fornecedor",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.FornecedorAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Adicionar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "CreateAsync",
     "RelativePath": "api/Fornecedor",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "cadatrarDTO",
-        "Type": "MyProjectAPI.Dto.FornecedorCadastrarDTO",
+        "Name": "createDTO",
+        "Type": "MyProjectAPI.Dto.FornecedorCreateDTO",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.FornecedorAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "BuscarID",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "GetByIdAsync",
     "RelativePath": "api/Fornecedor/{id}",
     "HttpMethod": "GET",
     "IsController": true,
@@ -137,8 +157,8 @@
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.FornecedorAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Atualizar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "UpdateByIdAsync",
     "RelativePath": "api/Fornecedor/{id}",
     "HttpMethod": "PUT",
     "IsController": true,
@@ -150,16 +170,16 @@
         "IsRequired": true
       },
       {
-        "Name": "atualizarDTO",
-        "Type": "MyProjectAPI.Dto.FornecedorAtualizarDTO",
+        "Name": "uptadeDTO",
+        "Type": "MyProjectAPI.Dto.FornecedorDTO",
         "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
-    "ContainingType": "MyProjectAPI.Controllers.GenericController\u00603[[MyProjectAPI.Dto.FornecedorAtualizarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCadastrarDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-    "Method": "Deletar",
+    "ContainingType": "MyProjectAPI.Controllers.BaseController\u00603[[MyProjectAPI.Dto.FornecedorUpdateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorCreateDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null],[MyProjectAPI.Dto.FornecedorDTO, MyProjectAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+    "Method": "DeleteAsync",
     "RelativePath": "api/Fornecedor/{id}",
     "HttpMethod": "DELETE",
     "IsController": true,
@@ -175,7 +195,7 @@
   },
   {
     "ContainingType": "MyProjectAPI.Controllers.FornecedorController",
-    "Method": "BuscarCNPJ",
+    "Method": "GetByCnpjAsync",
     "RelativePath": "api/Fornecedor/cnpj/{cnpj}",
     "HttpMethod": "GET",
     "IsController": true,

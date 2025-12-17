@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MyProjectAPI.Context;
+using MyProjectAPI.Middlewares;
 using Scrutor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

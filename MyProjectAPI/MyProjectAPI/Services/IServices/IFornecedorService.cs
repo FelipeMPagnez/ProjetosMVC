@@ -3,8 +3,8 @@ using MyProjectAPI.Models;
 
 namespace MyProjectAPI.Services.IServices
 {
-    public interface IFornecedorService : IServices<FornecedorAtualizarDTO, FornecedorCadastrarDTO, FornecedorDTO>
+    public interface IFornecedorService : IServices<FornecedorDTO, FornecedorCreateDTO, FornecedorUpdateDTO>
     {
-        Task<ResponseModels<FornecedorDTO>> BuscarCNPJ(string cnpj);
+        Task<FornecedorDTO> GetByCnpjAsync(string cnpj);
     }
 }
